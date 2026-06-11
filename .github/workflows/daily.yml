@@ -1,0 +1,47 @@
+name: 每日指数投资资讯
+
+on:
+  schedule:
+    # 北京时间 8:00 = UTC 0:00，仅工作日
+    - cron: '0 0 * * 1-5'
+    # 备用：UTC 1:00（北京9:00），双保险
+    - cron: '0 1 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  daily-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 运行每日资讯脚本
+        env:
+          PUSHDEER_KEY: ${{ secrets.PUSHDEER_KEY }}
+        run: python daily_report.py
+
+      - name: 提交日报到仓库
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add today_report.md logs/ || true
+          git diff --staged --quiet || git commit -m "Auto-update daily report $(date +%Y%m%d)"
+          git push
+
+      - name: 上传日志
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-report-logs
+          path: logs/

@@ -1,0 +1,15 @@
+{
+  "pushKey": "PDU41552TCTtotgq3EC5AvTOaXpiZG0eMTR6VAl8v",
+  "pushDeerUrl": "https://api2.pushdeer.com/message/push",
+  "maxRetries": 3,
+  "retryDelayMs": 3000,
+  "requestTimeoutMs": 30000,
+  "minNewsCount": 25,
+  "warningNewsCount": 30,
+  "aiMaxAttempts": 3,
+  "maxRetryPerDay": 4,
+  "historyRetentionDays": 3,
+  "logRetentionDays": 7,
+  "lockTimeoutMs": 1800000,
+  "requiredSections": ["恒生互联网ETF", "信息技术ETF", "医疗ETF", "酒ETF", "新能源汽车ETF"]
+}

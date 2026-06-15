@@ -57,7 +57,7 @@ function categorizeNews(newsList) {
 
     var etfMap = { broad: '510300', internet: '513330', chip: '159995', medical: '162412', comm: '515880' };
     var limits = { broad: 8, internet: 5, chip: 5, medical: 5, comm: 5 };
-    var industryCats = ['internet', 'chip', 'medical', 'comm'];
+    var industryCats = ['chip', 'comm', 'internet', 'medical'];
 
     var junkPatterns = ['减持', '折让', '配售', '复牌', '停牌', '联交所最新资料', '每股作价'];
     var nonFinancePatterns = ['自卫队', '台海', '世卫大会', '北约', '太空公司', '航天器', '文身', '布林肯', '中亚五国', '主场外交', '观察者网'];

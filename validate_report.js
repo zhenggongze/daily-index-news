@@ -214,10 +214,10 @@ function findLCSstr(a, b) {
 
 function getETFSectionRegexes() {
     return [
-        { regex: /##\s*恒生互联网ETF\((\d+)\)([\s\S]*?)(?=##\s*芯片ETF|##\s*医疗ETF|##\s*通信ETF|##\s*⚠️|#\s|$)/, code: '159688' },
-        { regex: /##\s*芯片ETF\((\d+)\)([\s\S]*?)(?=##\s*医疗ETF|##\s*通信ETF|##\s*⚠️|#\s|$)/, code: '159995' },
-        { regex: /##\s*医疗ETF\((\d+)\)([\s\S]*?)(?=##\s*通信ETF|##\s*⚠️|#\s|$)/, code: '512170' },
-        { regex: /##\s*通信ETF\((\d+)\)([\s\S]*?)(?=##\s*⚠️|#\s|$)/, code: '515880' }
+        { regex: /##\s*芯片ETF\((\d+)\)([\s\S]*?)(?=##\s*通信ETF|##\s*恒生互联网ETF|##\s*医疗ETF|##\s*⚠️|#\s|$)/, code: '159995' },
+        { regex: /##\s*通信ETF\((\d+)\)([\s\S]*?)(?=##\s*恒生互联网ETF|##\s*医疗ETF|##\s*⚠️|#\s|$)/, code: '515880' },
+        { regex: /##\s*恒生互联网ETF\((\d+)\)([\s\S]*?)(?=##\s*医疗ETF|##\s*⚠️|#\s|$)/, code: '159688' },
+        { regex: /##\s*医疗ETF\((\d+)\)([\s\S]*?)(?=##\s*⚠️|#\s|$)/, code: '512170' }
     ];
 }
 

@@ -11,5 +11,5 @@
   "historyRetentionDays": 3,
   "logRetentionDays": 7,
   "lockTimeoutMs": 1800000,
-  "requiredSections": ["恒生互联网ETF", "芯片ETF", "医疗ETF", "通信ETF"]
+  "requiredSections": ["芯片ETF", "通信ETF", "恒生互联网ETF", "医疗ETF"]
 }

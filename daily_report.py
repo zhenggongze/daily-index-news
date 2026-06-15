@@ -136,7 +136,7 @@ def generate_report(market_data, news_list, system_prompt, etf_holdings, history
 
 ## 今日日期：{market_data['date']} {market_data['weekday']}
 
-## 7大指数行情（已由脚本获取，直接使用：）
+## 7大指数行情（仅作背景参考，无需输出为单独小节：）
 {market_data['markdown']}
 
 ## ETF前5大持仓（从etf_holdings.json读取）
@@ -155,7 +155,11 @@ def generate_report(market_data, news_list, system_prompt, etf_holdings, history
 4. 宽基禁止：个股/逆回购/MLF/场外期权/净资本/国债期货/LPR/SLF/PSL/XX板块等
 5. 行业个股只允许前5大持仓或重点关注公司
 6. 芯片ETF与通信ETF以光模块为边界
-7. 标题第1行必须是📅日期行，推送标题会自动替换"""
+7. 标题第1行必须是📅日期行，推送标题会自动替换
+8. **禁止输出"## 📈 今日市场速览"小节**
+9. **禁止在新闻中出现"行业级别""前5大持仓个股""### 行业级别""### 前5大持仓个股"等分节标记**
+10. **ETF标题只允许"## 🌐 ETF名称(代码)"格式，禁止加副标题**
+11. **所有新闻直接以**N️⃣标题 标签**格式连续排列，不插入###小标题**"""
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_msg}

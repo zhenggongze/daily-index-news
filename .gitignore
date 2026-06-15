@@ -63,9 +63,11 @@ push_*.html
 push_*.ps1
 push_*.js
 push_*.py
+!push_with_python.py
 send_*.ps1
 send_*.js
 send_*.py
+!send_*.ps1
 send_*.vbs
 send_*.cs
 send_*.exe
@@ -83,6 +85,7 @@ fetch_market.js
 fetch_etf_holdings.js
 fetch.js
 validate_report.js
+!validate_report.js
 fallback_push.js
 check_push_status.js
 update_history.js

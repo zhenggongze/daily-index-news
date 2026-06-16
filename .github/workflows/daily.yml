@@ -2,10 +2,8 @@ name: 每日指数投资资讯
 
 on:
   schedule:
-    # 北京时间 8:00 = UTC 0:00，仅工作日
+    # 仅一个cron：北京时间 8:00 = UTC 0:00，仅工作日
     - cron: '0 0 * * 1-5'
-    # 备用：UTC 1:00（北京9:00），双保险
-    - cron: '0 1 * * 1-5'
   workflow_dispatch:
 
 jobs:

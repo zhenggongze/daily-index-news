@@ -10,6 +10,7 @@
   ✅ 规则自检：
   - Skill检查：[列出相关Skill及是否已加载]
   - 验证计划：[说明如何验证结果]
+  - 安全扫描：[确认修改不涉及密钥/密码/Token硬编码]
   - 禁猜确认：[确认不猜测，不确定就问]
   ```
 - 未输出此确认 = 违规
@@ -56,6 +57,27 @@
 4. **修改完成后** → 本地测试 `python daily_report.py` + `python push_with_python.py` 双验证
 5. **输出确认**：`[TRAE端] xxx ✅` `[GitHub端] xxx ✅`
 
+### 🔴 强制检查点6：代码安全扫描（所有项目通用，最高优先级）
+**每次改完代码后，必须遍历所有修改过的文件 + 新增文件，逐行扫描以下内容是否存在：**
+
+**扫描清单（零容忍）：**
+1. `sk-` 开头的字符串 → API Key 泄露
+2. `ghp_` / `gho_` / `ghu_` / `ghs_` 开头的字符串 → GitHub Token 泄露
+3. `AKID` / `SecretKey` / `access_key` / `secret_key` → 云服务密钥
+4. 硬编码的密码、Token、认证凭据
+5. 数据库连接字符串含密码（如 `mysql://user:password@host`）
+
+**扫描范围：**
+- 本次修改/新增的每一个文件
+- 特别是 HTML、JS、JSON、配置文件（`.env`、`.json`、`config*`）
+- 前端文件（HTML/JS）中绝对禁止出现 API Key — 所有对公网可见
+- 如果涉及**其他项目**的修改（非当前工作目录），必须有额外的警惕意识
+
+**违规处理：**
+- 扫到疑似泄露 → 立即修复（换环境变量/配置分离）
+- 通知用户去云平台控制台吊销泄露的 Key
+- 记录到项目规则中，防止重复犯错
+
 ---
 
 ## Skill优先原则
@@ -76,18 +98,18 @@
 | batch-import-skills | 批量将本地文件夹中的技能导入到 SOLO 中，适用于安装多个技能或从本地文件夹复制技能 |
 | brainstorming | 任何创意性工作前、产品方向验证（Office Hours 6问：需求/壁垒/场景/切入/验证/未来） |
 | browser-guide | 浏览器访问特定互联网平台（知乎/GitHub/百度等），配合 integrated_browser MCP |
-| code-review | 审查代码、检查bug、提升代码质量、安全审查 |
-| code-simplifier | 简化优化最近修改的代码、重构、提升可读性 |
+| code-review | 审查代码、检查bug、提升代码质量、安全审查（含密钥泄露检查） |
+| code-simplifier | 简化优化最近修改的代码、重构、提升可读性（修改后需安全扫描） |
 | drawio-skill | 画图：流程图、架构图、泳道图、网络拓扑图、ER图、UML图、思维导图等 |
-| full-coverage-test | 功能调整后全面测试 Skill — 编码前需求清单 + 编码中TDD红绿重构 + 编码后E2E截图/四层测试/功能覆盖矩阵/根因追溯 + 内容准入否决质量评分 |
+| full-coverage-test | 功能调整后全面测试 Skill — 编码前需求清单 + 编码中TDD红绿重构 + 编码后E2E截图/四层测试/功能覆盖矩阵/根因追溯 + 内容准入否决质量评分（改代码后需安全扫描） |
 | guizang-ppt-skill | 网页 PPT 生成（单 HTML 横向翻页），电子杂志风/瑞士国际主义风 |
 | guizang-social-card-skill | 小红书图文/公众号封面对生成（杂志风/瑞士风双视觉系统），姊妹产品与 guizang-ppt-skill 互补 |
 | humanizer-zh | 中文去 AI 写作痕迹，识别 24 种 AI 模式，让文字更像人写的 |
-| karpathy-guidelines | 写代码、审查代码、重构代码时减少常见LLM编码错误 |
-| mcp-builder | 构建MCP服务器、集成外部API |
+| karpathy-guidelines | 写代码、审查代码、重构代码时减少常见LLM编码错误（含密钥硬编码检查规则） |
+| mcp-builder | 构建MCP服务器、集成外部API（密钥必须用环境变量，禁止硬编码） |
 | ppt-master | AI 驱动 PPT 生成，通过 SVG 合成原生可编辑 .pptx 文件 |
-| skill-creator | 创建新Skill或更新现有Skill |
-| web-dev | 从零创建网站、网页、Web应用（不适用于已有项目修改） |
+| skill-creator | 创建新Skill或更新现有Skill（创建后需检查不包含敏感信息） |
+| web-dev | 从零创建网站、网页、Web应用（创建后必须安全扫描，前端禁止硬编码API Key） |
 | webapp-testing | 测试本地Web应用、验证前端功能、调试UI |
 | writing-skills | 创建/编辑/验证Skill |
 
@@ -134,6 +156,21 @@
   3. [步骤] → 验证: [检查方式]
   ```
 - 强成功标准让你能独立循环，弱成功标准（"让它能用"）需要不断确认
+
+### 5. 安全扫描（公网部署强制）
+**所有项目最终要部署到公网！每次改完代码必须逐行扫描所有修改/新增文件：**
+
+**强制扫描清单（每一项都是红色警报）：**
+1. `sk-` / `ghp_` / `gho_` / `ghu_` / `ghs_` / `AKID` / `SecretKey` / `access_key` / `secret_key` 开头的字符串
+2. 硬编码的密码、Token、认证凭据
+3. 数据库连接字符串（`mysql://user:password` / `postgres://user:password` / `redis://:password`）
+4. 前端文件中的任何API Key — 浏览器查看源码就可见
+5. 配置文件（`.env` / `.json` / `config*` / `*.yml` / `*.yaml`）中的敏感凭据
+
+**修复原则：**
+- 发现疑似泄露 → 立即换成环境变量加载 + 通知用户去云平台吊销旧Key
+- 前端发请求必须走自己的后端代理，不能直接带Key调第三方API
+- 记入project_rules防重复犯错
 
 ## 其他规则
 

@@ -41,21 +41,42 @@
 - **输出同步结果表格**：[路径] → [已更新/无需更新]
 - 未执行此步 = 违规
 
-### 🔴 强制检查点5：双渠道同步（本项目强制，最高优先级）
-**本项目存在两条独立推送链路，任何修改必须同时更新两条链路，不允许只改一条：**
+### 🔴 强制检查点5：Windows Task Scheduler推送（本项目唯一推送方式）
+**所有推送由Windows任务计划程序管理，通过 `daily_report.py` → PushDeer完成。**
 
-**链路对比：**
-| 链路 | 运行位置 | 生成方式 | 核心代码 |
-|------|---------|---------|---------|
-| TRAE Schedule | 你本机 | AI Agent + WebSearch 实时写稿 | `prompt_update_v2.txt` + `write_today_report.js` + `push_with_python.py` |
-| GitHub Actions | GitHub 云端 | DeepSeek API 按规则生成 | `prompt_update_v2.txt` + `daily_report.py` |
+**推送链路：**
+| 调度方式 | 运行位置 | 生成方式 | 核心文件 |
+|---------|---------|---------|---------|
+| Windows Task Scheduler | 你本机（电脑开机） | DeepSeek API 按 `prompt_update_v2.txt` 规则生成 | `daily_report.py` + `prompt_update_v2.txt` |
 
-**修改任何内容时严格执行以下清单：**
-1. **规则/格式/质量标准** → 必须同时检查 `prompt_update_v2.txt`（两端共享）和 `daily_report.py`（DeepSeek user_msg 中的硬约束）
-2. **生成模板/新闻内容结构** → 必须同时检查 `prompt_update_v2.txt` 和 `write_today_report.js`
-3. **推送逻辑** → 必须同时检查 `push_with_python.py` 和 `daily_report.py`（push_report函数）
-4. **修改完成后** → 本地测试 `python daily_report.py` + `python push_with_python.py` 双验证
-5. **输出确认**：`[TRAE端] xxx ✅` `[GitHub端] xxx ✅`
+**触发时间：** 工作日早8:00
+
+**相关文件：**
+- `run_daily_report.bat` — bat入口，cd到项目目录后调用daily_report.py
+- `task_daily_report.xml` — 任务计划程序导出备份（按周工作日8:00）
+- `setup_schedule.ps1` — PowerShell安装脚本
+- `logs/task_runner.log` — 运行日志
+
+**修改规则/推送逻辑时只需检查以下文件：**
+1. `prompt_update_v2.txt` — 规则源
+2. `daily_report.py` — 生成+推送主脚本
+3. `push_with_python.py` — 推送工具
+4. 修改后测试：`python push_with_python.py` 验证推送
+
+**Task Scheduler管理命令：**
+```
+# 安装（管理员）
+powershell -ExecutionPolicy Bypass -File "D:\TRAE SOLO CN\投资指数资讯\setup_schedule.ps1"
+
+# 卸载
+Unregister-ScheduledTask -TaskName "Trae每日指数投资资讯" -Confirm:$false
+
+# 手动立即运行
+Start-ScheduledTask -TaskName "Trae每日指数投资资讯"
+
+# 查看日志
+Get-Content "D:\TRAE SOLO CN\投资指数资讯\logs\task_runner.log"
+```
 
 ### 🔴 强制检查点6：代码安全扫描（所有项目通用，最高优先级）
 **每次改完代码后，必须遍历所有修改过的文件 + 新增文件，逐行扫描以下内容是否存在：**

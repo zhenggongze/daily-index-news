@@ -288,13 +288,21 @@ def main():
     print(f"[{today.isoformat()}] 开始每日资讯流水线")
     print("=" * 40)
 
-    # 1. 市场数据
+    # 1. 市场数据（非致命，失败则使用占位）
     print("\n[1/5] 获取市场数据...")
     market = fetch_market_data()
     if not market:
-        print("MARKET_FETCH_FAILED: 无法获取行情，终止")
-        return
-    print(f"  上证: {market['date']} {market['weekday']}")
+        print("MARKET_FETCH_FAILED: 行情暂不可用，继续生成（无行情数据）")
+        today = date.today()
+        wd = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
+        market = {
+            "date": f"{today.year}年{today.month}月{today.day}日",
+            "weekday": wd[today.weekday()],
+            "is_weekend": today.weekday() >= 5,
+            "indices": {},
+            "markdown": "（行情数据暂不可用）"
+        }
+    print(f"  日期: {market['date']} {market['weekday']}")
 
     # 2. 新闻
     print("\n[2/5] 拉取新闻...")

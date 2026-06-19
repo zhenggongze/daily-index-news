@@ -47,31 +47,40 @@
 **推送链路：**
 | 调度方式 | 运行位置 | 生成方式 | 核心文件 |
 |---------|---------|---------|---------|
-| Windows Task Scheduler | 你本机（电脑开机） | DeepSeek API 按 `prompt_update_v2.txt` 规则生成 | `daily_report.py` + `prompt_update_v2.txt` |
+| Windows Task Scheduler（双任务） | 你本机 | DeepSeek API 按 `prompt_update_v2.txt` 规则生成 | `daily_report.py` + `prompt_update_v2.txt` |
 
-**触发时间：** 工作日早8:00
+**双触发机制（解决重启/锁屏导致漏推）：**
+| 任务名 | 触发条件 | 用途 |
+|-------|---------|------|
+| `Trae每日指数投资资讯` | 工作日08:00 | 主触发 |
+| `Trae每日指数投资资讯-开机补发` | 电脑开机后1分钟 | 重启/锁屏后补发 |
+
+**防重复机制（在 `daily_report.py` 中内置）：**
+- `is_today_pushed()` → 读取 `push_status.json`，检查今天是否已推送
+- `record_push_success()` → 推送成功后写入 `push_status.json`
+- 开机补发任务运行时，如果当天已8:00推送过，自动跳过
 
 **相关文件：**
-- `run_daily_report.bat` — bat入口，cd到项目目录后调用daily_report.py
-- `task_daily_report.xml` — 任务计划程序导出备份（按周工作日8:00）
-- `setup_schedule.ps1` — PowerShell安装脚本
+- `run_daily_report.bat` — bat入口
+- `daily_report.py` — 生成+推送主脚本（含防重检查+成功记录）
+- `push_status.json` — 推送状态记录（自动维护）
+- `task_daily_report.xml` — 任务XML备份（日触发+开机触发）
+- `setup_admin.bat` — 以管理员运行注册两个任务
 - `logs/task_runner.log` — 运行日志
 
-**修改规则/推送逻辑时只需检查以下文件：**
-1. `prompt_update_v2.txt` — 规则源
-2. `daily_report.py` — 生成+推送主脚本
-3. `push_with_python.py` — 推送工具
-4. 修改后测试：`python push_with_python.py` 验证推送
-
-**Task Scheduler管理命令：**
+**安装方法（仅首次，需管理员权限）：**
 ```
-# 安装（管理员）
-powershell -ExecutionPolicy Bypass -File "D:\TRAE SOLO CN\投资指数资讯\setup_schedule.ps1"
+# 右键 → 以管理员身份运行
+D:\TRAE SOLO CN\投资指数资讯\setup_admin.bat
+```
 
+**管理命令：**
+```
 # 卸载
-Unregister-ScheduledTask -TaskName "Trae每日指数投资资讯" -Confirm:$false
+schtasks /delete /tn "Trae每日指数投资资讯" /f
+schtasks /delete /tn "Trae每日指数投资资讯-开机补发" /f
 
-# 手动立即运行
+# 手动立即运行（测试用）
 Start-ScheduledTask -TaskName "Trae每日指数投资资讯"
 
 # 查看日志

@@ -18,6 +18,44 @@ DEEPSEEK_MODEL = "deepseek-v4-flash"
 PUSHDEER_KEY = os.environ.get("PUSHDEER_KEY", "PDU41552TCTtotgq3EC5AvTOaXpiZG0eMTR6VAl8v")
 PUSHDEER_URL = "https://api2.pushdeer.com/message/push"
 PUSH_TITLE = "Trae每日指数投资资讯"
+STATUS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "push_status.json")
+
+# ========== 推送状态管理 ==========
+def is_today_pushed():
+    """检查今天是否已经推送过（用于登录时补发场景）"""
+    if not os.path.exists(STATUS_FILE):
+        return False
+    try:
+        with open(STATUS_FILE, "r", encoding="utf-8") as f:
+            status = json.load(f)
+        today_str = date.today().isoformat()
+        pushed = status.get("lastSuccessDate") == today_str
+        if pushed:
+            print(f"  ✅ 今天({today_str})已推送过，跳过")
+        return pushed
+    except:
+        return False
+
+def record_push_success():
+    """推送成功后记录到push_status.json"""
+    today_str = date.today().isoformat()
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    status = {}
+    if os.path.exists(STATUS_FILE):
+        try:
+            with open(STATUS_FILE, "r", encoding="utf-8") as f:
+                status = json.load(f)
+        except:
+            status = {}
+    status["lastSuccessDate"] = today_str
+    status["lastSuccessTime"] = now_str
+    dates = status.get("successDates", [])
+    if today_str not in dates:
+        dates.append(today_str)
+    status["successDates"] = dates[-30:]
+    with open(STATUS_FILE, "w", encoding="utf-8") as f:
+        json.dump(status, f, ensure_ascii=False, indent=2)
+    print(f"  ✅ 已记录推送状态: {today_str}")
 
 # ========== 获取市场数据 ==========
 def fetch_market_data():
@@ -284,6 +322,11 @@ def main():
         print(f"WEEKEND: {today.weekday()}, skipping")
         return
 
+    # 重复推送检查（登录时触发的补发场景）
+    if is_today_pushed():
+        print("ALREADY_PUSHED_TODAY: 跳过")
+        return
+
     print("=" * 40)
     print(f"[{today.isoformat()}] 开始每日资讯流水线")
     print("=" * 40)
@@ -334,7 +377,8 @@ def main():
 
     # 5. 推送
     print("\n[5/5] 推送...")
-    push_report()
+    if push_report():
+        record_push_success()
 
 if __name__ == "__main__":
     main()

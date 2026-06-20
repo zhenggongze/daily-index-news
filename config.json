@@ -1,5 +1,6 @@
+import os
 {
-  "pushKey": "PDU41552TCTtotgq3EC5AvTOaXpiZG0eMTR6VAl8v",
+  "pushKey": os.environ.get("PUSHDEER_KEY", ""),
   "pushDeerUrl": "https://api2.pushdeer.com/message/push",
   "maxRetries": 3,
   "retryDelayMs": 3000,

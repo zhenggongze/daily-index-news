@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Push today_report.md via PushDeer. Used by TRAE Schedule instead of Node.js."""
-import sys, json, requests
+import sys, json, requests, os
 
 with open('today_report.md', 'r', encoding='utf-8') as f:
     content = f.read()
 
 first_line = 'Trae每日指数投资资讯'
-key = 'PDU41552TCTtotgq3EC5AvTOaXpiZG0eMTR6VAl8v'
+key = os.environ.get("PUSHDEER_KEY", "")
 
 for attempt in range(1, 4):
     try:

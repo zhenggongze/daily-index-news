@@ -12,10 +12,10 @@ import os, sys, json, re, time, requests
 from datetime import datetime, date, timedelta
 
 # ========== 配置 ==========
-DEEPSEEK_KEY = "sk-350f6fd5bb314a72b62538cfa31f854e"
+DEEPSEEK_KEY = os.environ.get("DEEPSEEK_KEY", "")
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 DEEPSEEK_MODEL = "deepseek-v4-flash"
-PUSHDEER_KEY = os.environ.get("PUSHDEER_KEY", "PDU41552TCTtotgq3EC5AvTOaXpiZG0eMTR6VAl8v")
+PUSHDEER_KEY = os.environ.get("PUSHDEER_KEY", "")
 PUSHDEER_URL = "https://api2.pushdeer.com/message/push"
 PUSH_TITLE = "Trae每日指数投资资讯"
 STATUS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "push_status.json")

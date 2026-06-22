@@ -373,7 +373,8 @@ def main():
             break
         print(f"  => 重试 (剩余{3-attempt}次)")
     else:
-        print("MAX_RETRIES_EXCEEDED: 3次生成均未通过校验")
+        print("MAX_RETRIES_EXCEEDED: 3次生成均未通过校验，跳过推送")
+        return
 
     # 5. 推送
     print("\n[5/5] 推送...")

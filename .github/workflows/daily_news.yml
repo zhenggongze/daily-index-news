@@ -14,28 +14,20 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: 初始化日志
-        run: |
-          echo "RUN_ID=${{ env.RUN_ID }}"
-          python workflow_logger.py --record "初始化" "success"
-
       - name: 检出代码
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
       - name: 设置 Python
-        run: |
-          python workflow_logger.py --record "设置 Python" "running"
-          python --version
-          pip --version
-          python workflow_logger.py --record "设置 Python" "success"
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: 安装 Python 依赖
         run: |
           python workflow_logger.py --record "安装依赖" "running"
           pip install feedparser requests urllib3
-          pip list 2>/dev/null | grep -E "feedparser|requests|urllib3"
           python workflow_logger.py --record "安装依赖" "success"
 
       - name: 运行数据流水线
@@ -57,7 +49,6 @@ jobs:
       - name: 验证数据文件
         run: |
           python workflow_logger.py --record "验证数据文件" "running"
-          ls -la news_site/public/data/
           for f in news_site/public/data/*.json; do
             [ -f "$f" ] || continue
             count=$(python -c "import json; d=json.load(open('$f')); print(len(d.get('news',[])))" 2>/dev/null || echo "?")

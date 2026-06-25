@@ -1,0 +1,5 @@
+# 强制 Python 和 YAML 文件使用 LF 行尾（Linux runner 兼容）
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sh text eol=lf

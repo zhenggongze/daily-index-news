@@ -97,10 +97,11 @@ jobs:
         working-directory: news_site
         run: |
           python ../workflow_logger.py --record "部署到 OSS" "running"
-          python deploy_minimal.py
+          output=$(python deploy_minimal.py 2>&1)
           rc=$?
+          echo "$output"
           if [ $rc -ne 0 ]; then
-            err=$(python deploy_minimal.py 2>&1 | tail -3)
+            err=$(echo "$output" | tail -5)
             python ../workflow_logger.py --record "部署到 OSS" "failure" "$err"
             exit $rc
           fi

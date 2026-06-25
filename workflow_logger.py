@@ -157,6 +157,22 @@ def cmd_finish():
     oss_key = f"workflow_logs/{run_id}.json"
     upload_to_oss(report, oss_key)
 
+    latest = {
+        "run_id": run_id,
+        "timestamp": report["timestamp"],
+        "final_status": final_status,
+        "failure_count": failure_count,
+        "success_count": success_count,
+        "run_number": report["run_number"],
+        "workflow": report["workflow"],
+        "branch": report["branch"],
+        "commit": report["commit"],
+    }
+    if failure_count > 0:
+        failed = [{"step": s["step"], "detail": s["detail"][:300]} for s in steps if s["status"] == "failure"]
+        latest["failed_steps"] = failed
+    upload_to_oss(latest, "latest_status.json")
+
     if failure_count > 0:
         failed = [s for s in steps if s["status"] == "failure"]
         error_detail = "\n".join(f"❌ **{s['step']}**: {s['detail'][:200]}" for s in failed)

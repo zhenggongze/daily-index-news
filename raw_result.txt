@@ -1,0 +1,1 @@
+Exception: SocketException - 在数据库查找中出现一个不可恢复的错误。

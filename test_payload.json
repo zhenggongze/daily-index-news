@@ -1,0 +1,26 @@
+{
+  "msg_type": "post",
+  "content": {
+    "post": {
+      "zh_cn": {
+        "title": "测试消息",
+        "content": [
+          [
+            {
+              "tag": "text",
+              "text": "这是一条来自SOLO的测试消息",
+              "text_style": {"bold": true}
+            }
+          ],
+          null,
+          [
+            {
+              "tag": "text",
+              "text": "如果收到这条消息，说明推送通道正常"
+            }
+          ]
+        ]
+      }
+    }
+  }
+}

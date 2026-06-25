@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>POST测试2</title></head>
+<body>
+<h2>测试2: 禁用CORS后POST...</h2>
+<pre id="result">等待中...</pre>
+<script>
+fetch('https://sctapi.ftqq.com/SCT349597Tmgw1qxFT3dgo3DhSxUNK7Tqi.send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'title=' + encodeURIComponent('浏览器POST测试') + '&desp=' + encodeURIComponent('浏览器POST成功！')
+})
+.then(r => r.text())
+.then(data => {
+    document.getElementById('result').textContent = 'SUCCESS: ' + data;
+    document.title = 'DONE_SUCCESS';
+})
+.catch(err => {
+    document.getElementById('result').textContent = 'ERROR: ' + err.message;
+    document.title = 'DONE_ERROR';
+});
+</script>
+</body>
+</html>

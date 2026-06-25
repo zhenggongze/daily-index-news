@@ -1,0 +1,53 @@
+name: AI算力产业链每日资讯
+
+on:
+  schedule:
+    # 北京时间工作日 08:00 = UTC 00:00 周一至周五
+    - cron: '0 0 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  daily-news:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装 Python 依赖
+        run: pip install feedparser requests urllib3
+
+      - name: 运行数据流水线（RSS采集 + DeepSeek分析 + 生成JSON）
+        run: python daily_pipeline.py
+        env:
+          DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装 Node 依赖
+        run: npm ci
+        working-directory: news_site
+
+      - name: 构建前端
+        run: npm run build
+        working-directory: news_site
+
+      - name: 验证数据完整性
+        run: python verify_deploy.py
+        working-directory: news_site
+
+      - name: 部署到 OSS + 刷新 CDN
+        run: python deploy_minimal.py
+        working-directory: news_site
+        env:
+          OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
+          OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}

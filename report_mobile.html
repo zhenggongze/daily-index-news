@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>郑公泽指数投资每日资讯</title>
+<style>
+:root {
+  --primary: #1a365d;
+  --accent: #d69e2e;
+  --bg: #ffffff;
+  --text: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --green-bg: #dcfce7;
+  --green-text: #166534;
+  --red-bg: #fef2f2;
+  --red-text: #dc2626;
+  --yellow-bg: #fef3c7;
+  --yellow-text: #92400e;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #f1f5f9;
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.container {
+  max-width: 100%;
+  padding: 0;
+}
+
+.header {
+  background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+  padding: 20px 16px;
+  color: white;
+}
+
+.header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.3px;
+}
+
+.header .date {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.market-card {
+  background: white;
+  margin: 12px;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.market-title {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.market-title::before {
+  content: "📊";
+}
+
+.market-indices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.index-item {
+  text-align: center;
+  padding: 10px 8px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.index-name {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.index-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.index-change {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.index-change.up { color: #ef4444; }
+.index-change.down { color: #22c55e; }
+
+.market-summary {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.65;
+}
+
+.section {
+  padding: 16px 12px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 14px;
+  padding-left: 10px;
+  border-left: 3px solid var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.news-card {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.news-header {
+  padding: 14px 14px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.news-num {
+  background: var(--primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.news-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.news-tag {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.tag-bull { background: var(--green-bg); color: var(--green-text); }
+.tag-bear { background: var(--red-bg); color: var(--red-text); }
+.tag-neutral { background: var(--yellow-bg); color: var(--yellow-text); }
+
+.news-content {
+  padding: 0 14px 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.news-meta {
+  padding: 8px 14px;
+  background: #f8fafc;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border);
+}
+
+.news-risk {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.industry-header {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+  padding: 14px 16px;
+  border-radius: 12px;
+  margin: 0 12px 12px;
+}
+
+.industry-header.tech { background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); }
+.industry-header.medical { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); }
+.industry-header.auto { background: linear-gradient(135deg, #ea580c 0%, #f97316 100%); }
+.industry-header.wine { background: linear-gradient(135deg, #be123c 0%, #e11d48 100%); }
+
+.industry-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.industry-code {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.industry-desc {
+  font-size: 12px;
+  margin-top: 8px;
+  opacity: 0.85;
+}
+
+.industry-news {
+  border-left: 3px solid #059669;
+  padding-left: 14px;
+  margin-bottom: 18px;
+}
+
+.industry-news.tech { border-left-color: #7c3aed; }
+.industry-news.medical { border-left-color: #0891b2; }
+.industry-news.auto { border-left-color: #ea580c; }
+.industry-news.wine { border-left-color: #be123c; }
+
+.industry-news-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.industry-news-content {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.65;
+  margin-bottom: 6px;
+}
+
+.industry-news-tag {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.tag-bull-text { color: var(--green-text); }
+.tag-bear-text { color: var(--red-text); }
+.tag-neutral-text { color: var(--yellow-text); }
+
+.risk-section {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 12px;
+}
+
+.risk-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #991b1b;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.risk-list {
+  list-style: none;
+}
+
+.risk-list li {
+  font-size: 13px;
+  color: #7f1d1d;
+  padding: 8px 0;
+  border-bottom: 1px solid #fecaca;
+  line-height: 1.5;
+}
+
+.risk-list li:last-child {
+  border-bottom: none;
+}
+
+.risk-list strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.footer p {
+  margin-bottom: 4px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>郑公泽指数投资每日资讯</h1>
+<div class="date">2026年5月18日 周一</div>
+</div>
+
+<div class="market-card">
+<div class="market-title">市场速览</div>
+<div class="market-indices">
+<div class="index-item">
+<div class="index-name">上证指数</div>
+<div class="index-value">4120.14</div>
+<div class="index-change down">▼ 0.37%</div>
+</div>
+<div class="index-item">
+<div class="index-name">沪深300</div>
+<div class="index-value">4836</div>
+<div class="index-change down">▼ 0.48%</div>
+</div>
+<div class="index-item">
+<div class="index-name">创业板指</div>
+<div class="index-value">3906</div>
+<div class="index-change down">▼ 0.87%</div>
+</div>
+</div>
+<div class="market-summary">
+央行逆回购连续三月缩量续作，本月净回笼达1万亿，降准降息预期同步降温。证监会发布衍生品监管新规，A股46家公司被立案调查同比增逾五成。外资一季度加仓46.8亿股，MSCI中国指数新纳入22只成分股。
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">📈 宽基指数要闻</div>
+
+<div class="news-card">
+<div class="news-header">
+<span class="news-num">1</span>
+<span class="news-title">央行逆回购连续缩量，5月净回笼资金达1万亿</span>
+<span class="news-tag tag-neutral">中性</span>
+</div>
+<div class="news-content">
+5月15日央行开展3000亿元6个月期买断式逆回购操作，本月到期8000亿实现净回笼5000亿。连续第三个月缩量续作，降准降息预期同步降温。
+</div>
+<div class="news-meta">📌 沪深300ETF 510300 | ⚠️ <span class="news-risk">高风险关注</span></div>
+</div>
+
+<div class="news-card">
+<div class="news-header">
+<span class="news-num">2</span>
+<span class="news-title">证监会发布衍生品交易监管新规，禁止变相减持</span>
+<span class="news-tag tag-bull">利好</span>
+</div>
+<div class="news-content">
+禁止上市公司开展以自身股票为标的的衍生品交易，封堵变相减持漏洞。券商衍生品业务门槛提高至净资本不低于5亿元。
+</div>
+<div class="news-meta">📌 沪深300ETF 510300</div>
+</div>
+
+<div class="news-card">
+<div class="news-header">
+<span class="news-num">3</span>
+<span class="news-title">A股年内46家公司被立案调查，同比增逾五成</span>
+<span class="news-tag tag-neutral">中性</span>
+</div>
+<div class="news-content">
+监管节奏加快，从立案到处罚周期缩短。45家由证监会立案，原因集中在信息披露违规。退市不免责原则持续压实。
+</div>
+<div class="news-meta">📌 沪深300ETF 510300 | ⚠️ <span class="news-risk">高风险关注</span></div>
+</div>
+
+<div class="news-card">
+<div class="news-header">
+<span class="news-num">4</span>
+<span class="news-title">外资集体加仓A股，MSCI中国指数新纳入22只成分股</span>
+<span class="news-tag tag-bull">利好</span>
+</div>
+<div class="news-content">
+一季度末外资持股较去年末增46.8亿股，市值增697.6亿。高盛新进525家、瑞银新进385家A股十大流通股东。5月29日生效。
+</div>
+<div class="news-meta">📌 沪深300ETF 510300</div>
+</div>
+
+<div class="news-card">
+<div class="news-header">
+<span class="news-num">5</span>
+<span class="news-title">华润新能源245亿IPO获证监会注册，深交所史上最大</span>
+<span class="news-tag tag-neutral">中性</span>
+</div>
+<div class="news-content">
+注册制下红筹回归第一股，2025年扣非净利润59.8亿同比降23.8%，一季度扣非净利润同比跌幅扩大至31%。
+</div>
+<div class="news-meta">📌 沪深300ETF 510300</div>
+</div>
+
+<div class="news-card">
+<div class="news-header">
+<span class="news-num">6</span>
+<span class="news-title">中美元首北京会晤达成建设性战略稳定共识</span>
+<span class="news-tag tag-bull">利好</span>
+</div>
+<div class="news-content">
+马斯克、黄仁勋等美国科技商业代表随团访华。全球市场不确定性预期下降，关税克制及供应链脱钩风险有望缓解。
+</div>
+<div class="news-meta">📌 沪深300ETF 510300</div>
+</div>
+</div>
+
+<div class="industry-header">
+<div class="industry-name">🌐 恒生互联网ETF</div>
+<div class="industry-code">513330</div>
+<div class="industry-desc">腾讯、阿里、京东财报密集发布</div>
+</div>
+<div class="section">
+<div class="industry-news">
+<div class="industry-news-title">📊 腾讯Q1营收1964.6亿同比增9%，AI资本开支付款370亿</div>
+<div class="industry-news-content">
+腾讯一季度经营盈利673.75亿元同比增17%。AI相关资本开支付款370亿元，计入当期319.36亿同比增16%环比增63%。马化腾透露下半年将有更多国产芯片投入使用。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+
+<div class="industry-news">
+<div class="industry-news-title">📊 阿里巴巴Q1营收2433.8亿，阿里云AI收入占比首破30%</div>
+<div class="industry-news-content">
+阿里云外部商业化收入增长加速至40%，AI相关产品收入占比首次突破30%成为新增长引擎。管理层表示AI投入已跨越初期培育阶段，进入正向规模商业化回报周期。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+
+<div class="industry-news">
+<div class="industry-news-title">📊 京东Q1营收3157亿同比增4.9%，年活跃用户超7.4亿</div>
+<div class="industry-news-content">
+季度活跃用户连续10个季度同比双位数增长。AI已深度嵌入采销、定价、库存、营销全流程，构建从基础设施到产业的全链条布局。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+</div>
+
+<div class="industry-header tech">
+<div class="industry-name">💻 信息技术ETF</div>
+<div class="industry-code">159939</div>
+<div class="industry-desc">国产替代+AI算力需求双轮驱动</div>
+</div>
+<div class="section">
+<div class="industry-news tech">
+<div class="industry-news-title">📊 国产AI芯片加速替代，英伟达在华份额降至接近归零</div>
+<div class="industry-news-content">
+2026年英伟达CEO黄仁勋承认在华AI加速器份额已近归零，国产芯片出货165万张占41%份额。华为昇腾950PR推理算力达H20的2.87倍。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span> | ⚠️ <span class="news-risk">高风险</span></div>
+</div>
+
+<div class="industry-news tech">
+<div class="industry-news-title">📊 中芯国际Q1营收176亿同比增8.1%，成熟制程重获定价权</div>
+<div class="industry-news-content">
+毛利率20.1%，产能利用率93.1%。供不应求品类已与客户协商涨价，二季度营收指引环比增14%-16%，毛利率20%-22%。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span> | ⚠️ <span class="news-risk">高风险</span></div>
+</div>
+
+<div class="industry-news tech">
+<div class="industry-news-title">📊 中芯国际产能利用率93.1%，AI算力需求虹吸全球代工产能</div>
+<div class="industry-news-content">
+联合CEO赵海军用虹吸效应形容AI对芯片产能的拉动。成熟制程涨价效应正沿产业链传导，Fabless企业成本端承压。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+</div>
+
+<div class="industry-header medical">
+<div class="industry-name">💊 医疗ETF</div>
+<div class="industry-code">162412</div>
+<div class="industry-desc">创新药政策红利+业绩拐点</div>
+</div>
+<div class="section">
+<div class="industry-news medical">
+<div class="industry-news-title">📊 创新药数据保护新规落地，行业估值逻辑转向研发价值</div>
+<div class="industry-news-content">
+5月15日药品试验数据保护实施办法正式施行。创新药享6年数据保护期、改良型新药4年、首仿药3年。临床审评时限从60个工作日压缩至30个。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span> | ⚠️ <span class="news-risk">高风险</span></div>
+</div>
+
+<div class="industry-news medical">
+<div class="industry-news-title">📊 恒瑞药明百济信达四大龙头Q1业绩全面爆发</div>
+<div class="industry-news-content">
+恒瑞医药净利润同比增25%-35%，创新药收入占比近60%；药明康德营收124.36亿同比增28.81%，在手订单597.7亿；百济神州营收增40%+首次实现全年盈利。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+
+<div class="industry-news medical">
+<div class="industry-news-title">📊 2026年医保目录新增114种药品，50款为1类创新药</div>
+<div class="industry-news-content">
+历年最多。新药从获批到进院从过去1-2年缩短至3-6个月。中国创新药一季度出海BD交易98笔总金额614亿美元同比增66.4%。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+</div>
+
+<div class="industry-header auto">
+<div class="industry-name">🚗 新能源汽车ETF</div>
+<div class="industry-code">501057</div>
+<div class="industry-desc">碳酸锂涨价+成本压力</div>
+</div>
+<div class="section">
+<div class="industry-news auto">
+<div class="industry-news-title">📊 碳酸锂涨至20万元/吨涨幅超250%，超15家车企集体涨价</div>
+<div class="industry-news-content">
+碳酸锂期货从近一年低位5.84万元/吨涨至20万元以上，涨幅超250%。比亚迪、特斯拉、小米等15+车企宣布涨价，特斯拉Model Y长续航版上调1.8万元。
+</div>
+<div class="industry-news-tag"><span class="tag-bear-text">🔴 利空</span> | ⚠️ <span class="news-risk">高风险</span></div>
+</div>
+
+<div class="industry-news auto">
+<div class="industry-news-title">📊 汽车行业利润率跌至3.2%创近十年新低</div>
+<div class="industry-news-content">
+一季度汽车行业利润率降至3.2%创近十年新低，行业利润总额784亿同比下滑18%。中型智能化电动车成本较2025年上涨4000-7000元。
+</div>
+<div class="industry-news-tag"><span class="tag-bear-text">🔴 利空</span></div>
+</div>
+
+<div class="industry-news auto">
+<div class="industry-news-title">📊 钠电池乘用车2026年将实现量产，续航突破500公里</div>
+<div class="industry-news-content">
+宁德时代高焕披露钠电池乘用车将于2026年实现量产，纯电续航可升级至500-600公里，可满足市场50%以上车型需求。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+</div>
+
+<div class="industry-header wine">
+<div class="industry-name">🍷 酒ETF</div>
+<div class="industry-code">512690</div>
+<div class="industry-desc">茅台涨价引领高端白酒</div>
+</div>
+<div class="section">
+<div class="industry-news wine">
+<div class="industry-news-title">📊 茅台年内第二次官宣涨价，4款产品零售价上调60至200元</div>
+<div class="industry-news-content">
+5月16日零时茅台上调4款自营产品零售价：陈年茅台(15)涨80元至4279元、精品茅台涨60元至2359元。年内两次调价释放市场化定价改革信号。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span> | ⚠️ <span class="news-risk">高风险</span></div>
+</div>
+
+<div class="industry-news wine">
+<div class="industry-news-title">📊 五粮液1618上涨1元，11大单品六涨四跌</div>
+<div class="industry-news-content">
+国窖1573收获七连阳创一个月新高，五粮液普五八代批价坚挺850元。精品茅台上涨4元创近月最高。白酒业拐点渐现。
+</div>
+<div class="industry-news-tag"><span class="tag-bull-text">🟢 利好</span></div>
+</div>
+
+<div class="industry-news wine">
+<div class="industry-news-title">📊 白酒行业深度分化：高端茅台涨价稳军心，次高端降价抢份额</div>
+<div class="industry-news-content">
+飞天涨价稳高端价格锚，精品茅台却变相降价37%。次高端300-800元价格带销量同比跌14%-20%。行业库存出清有望于Q3完成。
+</div>
+<div class="industry-news-tag"><span class="tag-neutral-text">🟡 中性</span></div>
+</div>
+</div>
+
+<div class="risk-section">
+<div class="risk-title">⚠️ 风险提示</div>
+<ul class="risk-list">
+<li><strong>流动性边际收紧</strong>央行逆回购连续三月缩量，本月净回笼达1万亿，降准降息预期降温</li>
+<li><strong>监管节奏加快</strong>A股年内46家被立案同比增逾50%，监管从严或引发个股波动</li>
+<li><strong>碳酸锂价格飙升</strong>从低点涨超250%至20万元/吨，车企成本端承压</li>
+<li><strong>白酒行业分化</strong>茅台涨价与次高端降价并存，渠道库存压力仍在</li>
+</ul>
+</div>
+
+<div class="footer">
+<p>本资讯仅供参考，不构成投资建议</p>
+<p>数据来源：新浪财经、人民网、央视财经、界面新闻等</p>
+</div>
+</div>
+</body>
+</html>

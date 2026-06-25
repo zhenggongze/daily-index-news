@@ -20,10 +20,16 @@ today_report.md
 website/
 
 # 系统文件
+.env
+*.env
 .DS_Store
 Thumbs.db
 *.tmp
 *.bak
+
+# SSL 证书（news_site自动生成，定期续期）
+news_site/ssl_account_key.json
+news_site/ssl_certs/
 
 # TRAE/Skill相关
 .trae/

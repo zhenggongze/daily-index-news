@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>飞书推送测试</title>
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+.result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+.success { background: #d4edda; color: #155724; }
+.error { background: #f8d7da; color: #721c24; }
+.waiting { background: #fff3cd; color: #856404; }
+pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+</style>
+</head>
+<body>
+<h1>🧪 飞书推送测试</h1>
+<div id="status" class="waiting">⏳ 正在测试...</div>
+<pre id="output">等待中...</pre>
+
+<script>
+const webhookUrl = "https://open.feishu.cn/open-apis/bot/v2/hook/78352ea0-ceee-4fd9-932b-dafabac15087";
+const payload = {
+    msg_type: "text",
+    content: { text: "✅ 郑公泽指数投资日报 - 测试消息\n\n如果收到这条消息，说明飞书推送功能正常！" }
+};
+
+document.getElementById("status").textContent = "⏳ 正在发送POST请求到飞书...";
+document.getElementById("status").className = "waiting";
+
+fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+})
+.then(response => {
+    return response.json().then(data => ({ status: response.status, data: data }));
+})
+.then(result => {
+    console.log("Result:", result);
+    document.getElementById("output").textContent = JSON.stringify(result, null, 2);
+    
+    if (result.status === 200) {
+        document.getElementById("status").textContent = "✅ 推送成功！请检查飞书收到的消息";
+        document.getElementById("status").className = "success";
+        document.title = "✅ 推送成功";
+    } else {
+        document.getElementById("status").textContent = "❌ 推送失败，状态码: " + result.status;
+        document.getElementById("status").className = "error";
+        document.title = "❌ 推送失败";
+    }
+})
+.catch(err => {
+    console.error("Error:", err);
+    document.getElementById("output").textContent = "错误信息:\n" + err.message;
+    document.getElementById("status").textContent = "❌ 网络错误: " + err.message;
+    document.getElementById("status").className = "error";
+    document.title = "❌ 网络错误";
+});
+</script>
+</body>
+</html>

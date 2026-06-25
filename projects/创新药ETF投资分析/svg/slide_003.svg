@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="100%" stop-color="#0d1a2e"/>
+    </linearGradient>
+    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#17a589" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#17a589" stop-opacity="0.02"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bgGrad)"/>
+
+  <!-- 标题 -->
+  <text x="960" y="70" font-family="Microsoft YaHei" font-size="36" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="4">国证港股通创新药指数：走势回顾与重仓股深度分析</text>
+  <line x1="560" y1="95" x2="1360" y2="95" stroke="#17a589" stroke-width="2" stroke-opacity="0.5"/>
+
+  <!-- ========== 上半部分：走势 + 关键事件 ========== -->
+  <rect x="40" y="120" width="1100" height="420" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#17a589" stroke-width="1" stroke-opacity="0.2"/>
+
+  <text x="60" y="160" font-family="Microsoft YaHei" font-size="20" font-weight="bold" fill="#17a589">指数历史走势与关键事件时间线</text>
+
+  <!-- 模拟走势图 -->
+  <rect x="60" y="180" width="1060" height="280" rx="6" fill="#0d1a2e" stroke="#2c3e50" stroke-width="1"/>
+
+  <!-- Y轴标签 -->
+  <text x="75" y="200" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">1300</text>
+  <text x="75" y="250" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">1100</text>
+  <text x="75" y="300" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">900</text>
+  <text x="75" y="350" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">700</text>
+  <text x="75" y="400" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">500</text>
+  <text x="75" y="450" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">300</text>
+
+  <!-- 网格线 -->
+  <line x1="90" y1="195" x2="1100" y2="195" stroke="#2c3e50" stroke-width="0.5" stroke-opacity="0.5"/>
+  <line x1="90" y1="245" x2="1100" y2="245" stroke="#2c3e50" stroke-width="0.5" stroke-opacity="0.5"/>
+  <line x1="90" y1="295" x2="1100" y2="295" stroke="#2c3e50" stroke-width="0.5" stroke-opacity="0.5"/>
+  <line x1="90" y1="345" x2="1100" y2="345" stroke="#2c3e50" stroke-width="0.5" stroke-opacity="0.5"/>
+  <line x1="90" y1="395" x2="1100" y2="395" stroke="#2c3e50" stroke-width="0.5" stroke-opacity="0.5"/>
+  <line x1="90" y1="445" x2="1100" y2="445" stroke="#2c3e50" stroke-width="0.5" stroke-opacity="0.5"/>
+
+  <!-- X轴标签 -->
+  <text x="120" y="470" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">2023/12</text>
+  <text x="280" y="470" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">2024/06</text>
+  <text x="440" y="470" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">2024/12</text>
+  <text x="600" y="470" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">2025/06</text>
+  <text x="760" y="470" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">2025/12</text>
+  <text x="920" y="470" font-family="Microsoft YaHei" font-size="11" fill="#7f8c8d">2026/05</text>
+
+  <!-- 走势线 -->
+  <polyline points="120,440 160,430 200,420 240,420 280,410 320,380 360,340 400,310 440,280 480,250 520,230 560,210 600,200 640,210 680,220 720,240 760,270 800,290 840,310 880,340 920,365 960,390 1000,400 1040,400 1080,410 1100,420"
+    fill="none" stroke="#17a589" stroke-width="2.5" filter="url(#glow)"/>
+
+  <!-- 走势填充 -->
+  <polygon points="120,440 120,440 160,430 200,420 240,420 280,410 320,380 360,340 400,310 440,280 480,250 520,230 560,210 600,200 640,210 680,220 720,240 760,270 800,290 840,310 880,340 920,365 960,390 1000,400 1040,400 1080,410 1100,420 1100,450 120,450"
+    fill="url(#chartGrad)"/>
+
+  <!-- 关键事件标记 -->
+  <!-- 事件1：2024.08 指数编制调整 -->
+  <circle cx="320" cy="380" r="6" fill="#e74c3c" opacity="0.8"/>
+  <line x1="320" y1="380" x2="320" y2="330" stroke="#e74c3c" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="320" y="318" font-family="Microsoft YaHei" font-size="11" fill="#e74c3c" text-anchor="middle">2024.08 指数编制调整</text>
+  <text x="320" y="305" font-family="Microsoft YaHei" font-size="10" fill="#e74c3c" text-anchor="middle">剔除CXO，聚焦纯创新药</text>
+
+  <!-- 事件2：2025.06 进入盈利兑现期 -->
+  <circle cx="560" cy="210" r="6" fill="#f39c12" opacity="0.8"/>
+  <line x1="560" y1="210" x2="560" y2="168" stroke="#f39c12" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="560" y="156" font-family="Microsoft YaHei" font-size="11" fill="#f39c12" text-anchor="middle">2025中期 头部Biotech首盈</text>
+  <text x="560" y="143" font-family="Microsoft YaHei" font-size="10" fill="#f39c12" text-anchor="middle">百济/信达首次全年盈利</text>
+
+  <!-- 事件3：2025Q3-Q4 深度回调 -->
+  <circle cx="760" cy="270" r="6" fill="#e74c3c" opacity="0.8"/>
+  <line x1="760" y1="270" x2="760" y2="228" stroke="#e74c3c" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="760" y="216" font-family="Microsoft YaHei" font-size="11" fill="#e74c3c" text-anchor="middle">2025Q3-Q4 深度回调</text>
+  <text x="760" y="203" font-family="Microsoft YaHei" font-size="10" fill="#e74c3c" text-anchor="middle">从高点回撤超25%</text>
+
+  <!-- 事件4：2026.05 ASCO催化 -->
+  <circle cx="1080" cy="420" r="6" fill="#3498db" opacity="0.8"/>
+  <line x1="1080" y1="420" x2="1080" y2="380" stroke="#3498db" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="1080" y="368" font-family="Microsoft YaHei" font-size="11" fill="#3498db" text-anchor="middle">2026.05 ASCO年会</text>
+  <text x="1080" y="355" font-family="Microsoft YaHei" font-size="10" fill="#3498db" text-anchor="middle">多家药企数据集中发布</text>
+
+  <!-- ========== 右侧：重仓个股分析 ========== -->
+  <rect x="1160" y="120" width="720" height="420" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#3498db" stroke-width="1" stroke-opacity="0.2"/>
+  <text x="1180" y="160" font-family="Microsoft YaHei" font-size="20" font-weight="bold" fill="#3498db">>4%重仓股逐个深度分析</text>
+
+  <!-- 百济神州 -->
+  <rect x="1180" y="180" width="340" height="90" rx="6" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="0.5"/>
+  <text x="1195" y="205" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">百济神州 (06160) 权重9.9%</text>
+  <text x="1195" y="228" font-family="Microsoft YaHei" font-size="12" fill="#bdc3c7">国产创新药出海标杆，泽布替尼全球销售破百亿</text>
+  <text x="1195" y="248" font-family="Microsoft YaHei" font-size="12" fill="#e67e22">首次实现全年盈利，确立Biopharma地位</text>
+  <text x="1195" y="265" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">管线：BTK抑制剂+PD-1+TIGIT等多靶点</text>
+
+  <!-- 信达生物 -->
+  <rect x="1535" y="180" width="330" height="90" rx="6" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="0.5"/>
+  <text x="1550" y="205" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">信达生物 (01801) 权重9.3%</text>
+  <text x="1550" y="228" font-family="Microsoft YaHei" font-size="12" fill="#bdc3c7">PD-1信迪利单抗国产龙头，管线超30个</text>
+  <text x="1550" y="248" font-family="Microsoft YaHei" font-size="12" fill="#e67e22">全球化授权合作，多款产品进入NMPA审评</text>
+  <text x="1550" y="265" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">业绩持续高增长，减亏趋势明确</text>
+
+  <!-- 石药集团 -->
+  <rect x="1180" y="285" width="340" height="90" rx="6" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="0.5"/>
+  <text x="1195" y="310" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">石药集团 (01093) 权重10.4%</text>
+  <text x="1195" y="333" font-family="Microsoft YaHei" font-size="12" fill="#bdc3c7">老牌药企转型创新，mRNA技术平台稀缺</text>
+  <text x="1195" y="353" font-family="Microsoft YaHei" font-size="12" fill="#e67e22">创新药占比持续提升，仿创结合商业模式稳健</text>
+  <text x="1195" y="370" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">估值相对较低，分红稳定</text>
+
+  <!-- 康方生物 -->
+  <rect x="1535" y="285" width="330" height="90" rx="6" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="0.5"/>
+  <text x="1550" y="310" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">康方生物 (09926) 权重8.4%</text>
+  <text x="1550" y="333" font-family="Microsoft YaHei" font-size="12" fill="#bdc3c7">AK112(依沃西)双抗出海，50亿美元授权</text>
+  <text x="1550" y="353" font-family="Microsoft YaHei" font-size="12" fill="#e67e22">下一代IO双抗平台，全球竞争力强</text>
+  <text x="1550" y="370" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">管线密集，多款双抗/三抗在研</text>
+
+  <!-- 药明生物 -->
+  <rect x="1180" y="390" width="340" height="90" rx="6" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="0.5"/>
+  <text x="1195" y="415" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">药明生物 (02269) 权重10.2%</text>
+  <text x="1195" y="438" font-family="Microsoft YaHei" font-size="12" fill="#bdc3c7">全球生物药CDMO龙头，2025年营收217.9亿</text>
+  <text x="1195" y="458" font-family="Microsoft YaHei" font-size="12" fill="#e67e22">净利润+46.3%，拟回购4亿美元</text>
+  <text x="1195" y="475" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">订单确定性高，受海外关系影响</text>
+
+  <!-- 中国生物制药 -->
+  <rect x="1535" y="390" width="330" height="90" rx="6" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="0.5"/>
+  <text x="1550" y="415" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">中国生物制药 (01177) 权重7.4%</text>
+  <text x="1550" y="438" font-family="Microsoft YaHei" font-size="12" fill="#bdc3c7">仿创结合典范，安罗替尼持续放量</text>
+  <text x="1550" y="458" font-family="Microsoft YaHei" font-size="12" fill="#e67e22">差异化创新管线，BD能力强</text>
+  <text x="1550" y="475" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">估值处于历史低位区间</text>
+
+  <!-- 页码 -->
+  <text x="960" y="1030" font-family="Microsoft YaHei" font-size="14" fill="#5a7a7a" text-anchor="middle">3 / 4</text>
+</svg>

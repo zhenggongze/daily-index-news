@@ -14,7 +14,7 @@ from datetime import datetime, date, timedelta
 # ========== 配置 ==========
 DEEPSEEK_KEY = os.environ.get("DEEPSEEK_KEY", "")
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
-DEEPSEEK_MODEL = "deepseek-v4-flash"
+DEEPSEEK_MODEL = "deepseek-v4-pro"
 PUSHDEER_KEY = os.environ.get("PUSHDEER_KEY", "")
 PUSHDEER_URL = "https://api2.pushdeer.com/message/push"
 PUSH_TITLE = "Trae每日指数投资资讯"

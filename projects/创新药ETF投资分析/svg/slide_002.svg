@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="leftGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a3a5c"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </linearGradient>
+    <linearGradient id="rightGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d4f3f"/>
+      <stop offset="100%" stop-color="#0a1628"/>
+    </linearGradient>
+    <linearGradient id="barA" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3498db"/>
+      <stop offset="100%" stop-color="#2980b9"/>
+    </linearGradient>
+    <linearGradient id="barH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#17a589"/>
+      <stop offset="100%" stop-color="#1abc9c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="#0a1628"/>
+
+  <!-- 标题 -->
+  <text x="960" y="80" font-family="Microsoft YaHei" font-size="40" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="4">A股 vs 港股 创新药ETF对比与重仓股分析</text>
+  <line x1="660" y1="105" x2="1260" y2="105" stroke="#17a589" stroke-width="2" stroke-opacity="0.5"/>
+
+  <!-- ========== 左侧：A股 ========== -->
+  <rect x="40" y="130" width="910" height="920" rx="10" fill="url(#leftGrad)" stroke="#3498db" stroke-width="1" stroke-opacity="0.3"/>
+
+  <text x="495" y="180" font-family="Microsoft YaHei" font-size="28" font-weight="bold" fill="#3498db" text-anchor="middle">A股：创新药ETF (159992)</text>
+  <text x="495" y="210" font-family="Microsoft YaHei" font-size="16" fill="#95a5a6" text-anchor="middle">跟踪中证创新药产业指数(931152)｜场外联接A:012781 C:012782</text>
+
+  <!-- 重仓股列表 A股 -->
+  <rect x="60" y="240" width="200" height="36" rx="4" fill="#3498db" fill-opacity="0.2"/>
+  <text x="70" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#3498db">股票名称</text>
+  <rect x="270" y="240" width="100" height="36" rx="4" fill="#3498db" fill-opacity="0.2"/>
+  <text x="280" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#3498db">代码</text>
+  <rect x="380" y="240" width="100" height="36" rx="4" fill="#3498db" fill-opacity="0.2"/>
+  <text x="390" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#3498db">权重</text>
+  <rect x="490" y="240" width="430" height="36" rx="4" fill="#3498db" fill-opacity="0.2"/>
+  <text x="500" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#3498db">核心看点</text>
+
+  <!-- 药明康德 -->
+  <text x="70" y="300" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">药明康德</text>
+  <text x="280" y="300" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">603259</text>
+  <text x="390" y="300" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">11.5%</text>
+  <text x="500" y="300" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">全球CXO龙头，AI药物发现，订单排至2027</text>
+  <rect x="60" y="310" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 恒瑞医药 -->
+  <text x="70" y="336" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">恒瑞医药</text>
+  <text x="280" y="336" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">600276</text>
+  <text x="390" y="336" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">10.2%</text>
+  <text x="500" y="336" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">PD-1出海，GLP-1双靶点，海外授权60亿美元</text>
+  <rect x="60" y="346" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 科伦药业 -->
+  <text x="70" y="372" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">科伦药业</text>
+  <text x="280" y="372" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">002422</text>
+  <text x="390" y="372" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">4.5%</text>
+  <text x="500" y="372" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">仿创结合，科伦博泰ADC平台国际授权</text>
+  <rect x="60" y="382" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 华东医药 -->
+  <text x="70" y="408" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">华东医药</text>
+  <text x="280" y="408" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">000963</text>
+  <text x="390" y="408" font-family="Microsoft YaHei" font-size="15" fill="#e67e22" font-weight="bold">3.8%</text>
+  <text x="500" y="408" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">医美+创新药双轮驱动，GLP-1布局</text>
+  <rect x="60" y="418" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 复星医药 -->
+  <text x="70" y="444" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">复星医药</text>
+  <text x="280" y="444" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">600196</text>
+  <text x="390" y="444" font-family="Microsoft YaHei" font-size="15" fill="#e67e22" font-weight="bold">3.6%</text>
+  <text x="500" y="444" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">CAR-T龙头，国际化布局完善</text>
+  <rect x="60" y="454" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 长春高新 -->
+  <text x="70" y="480" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">长春高新</text>
+  <text x="280" y="480" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">000661</text>
+  <text x="390" y="480" font-family="Microsoft YaHei" font-size="15" fill="#e67e22" font-weight="bold">3.4%</text>
+  <text x="500" y="480" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">生长激素龙头，儿科用药领军</text>
+  <rect x="60" y="490" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- A股特点总结 -->
+  <rect x="60" y="520" width="870" height="140" rx="8" fill="#3498db" fill-opacity="0.06" stroke="#3498db" stroke-width="1" stroke-opacity="0.2"/>
+  <text x="80" y="555" font-family="Microsoft YaHei" font-size="18" font-weight="bold" fill="#3498db">A股特点</text>
+  <text x="80" y="585" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 含CXO龙头(药明康德)，覆盖创新药全产业链</text>
+  <text x="80" y="610" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 含传统药企转型创新(恒瑞、科伦)，仿创结合更稳健</text>
+  <text x="80" y="635" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 受A股情绪影响大，波动相对较小</text>
+  <text x="80" y="660" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 前十大集中度约50%，CXO占比高</text>
+
+  <!-- ========== 右侧：港股 ========== -->
+  <rect x="970" y="130" width="910" height="920" rx="10" fill="url(#rightGrad)" stroke="#17a589" stroke-width="1" stroke-opacity="0.3"/>
+
+  <text x="1425" y="180" font-family="Microsoft YaHei" font-size="28" font-weight="bold" fill="#17a589" text-anchor="middle">港股：港股通创新药ETF (159570)</text>
+  <text x="1425" y="210" font-family="Microsoft YaHei" font-size="16" fill="#95a5a6" text-anchor="middle">跟踪国证港股通创新药指数｜规模264亿 医药类ETF最大</text>
+
+  <!-- 重仓股列表 港股 -->
+  <rect x="990" y="240" width="200" height="36" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="1000" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">股票名称</text>
+  <rect x="1200" y="240" width="100" height="36" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="1210" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">代码</text>
+  <rect x="1310" y="240" width="100" height="36" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="1320" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">权重</text>
+  <rect x="1420" y="240" width="440" height="36" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="1430" y="264" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">核心看点</text>
+
+  <!-- 百济神州 -->
+  <text x="1000" y="300" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">百济神州</text>
+  <text x="1210" y="300" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">06160</text>
+  <text x="1320" y="300" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">9.9%</text>
+  <text x="1430" y="300" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">泽布替尼全球放量，首次全年盈利</text>
+  <rect x="990" y="310" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 信达生物 -->
+  <text x="1000" y="336" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">信达生物</text>
+  <text x="1210" y="336" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">01801</text>
+  <text x="1320" y="336" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">9.3%</text>
+  <text x="1430" y="336" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">PD-1龙头，管线丰富，全球化加速</text>
+  <rect x="990" y="346" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 石药集团 -->
+  <text x="1000" y="372" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">石药集团</text>
+  <text x="1210" y="372" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">01093</text>
+  <text x="1320" y="372" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">10.4%</text>
+  <text x="1430" y="372" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">老牌药企转型创新，mRNA平台</text>
+  <rect x="990" y="382" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 康方生物 -->
+  <text x="1000" y="408" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">康方生物</text>
+  <text x="1210" y="408" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">09926</text>
+  <text x="1320" y="408" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">8.4%</text>
+  <text x="1430" y="408" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">AK112双抗出海，海外大额合作订单</text>
+  <rect x="990" y="418" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 中国生物制药 -->
+  <text x="1000" y="444" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">中国生物制药</text>
+  <text x="1210" y="444" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">01177</text>
+  <text x="1320" y="444" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">7.4%</text>
+  <text x="1430" y="444" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">仿创结合，安罗替尼等创新管线</text>
+  <rect x="990" y="454" width="870" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 药明生物 -->
+  <text x="1000" y="480" font-family="Microsoft YaHei" font-size="15" fill="#ecf0f1">药明生物</text>
+  <text x="1210" y="480" font-family="Microsoft YaHei" font-size="14" fill="#bdc3c7">02269</text>
+  <text x="1320" y="480" font-family="Microsoft YaHei" font-size="15" fill="#f39c12" font-weight="bold">10.2%</text>
+  <text x="1430" y="480" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">CXO龙头，2025年营收+16.7%，回购</text>
+
+  <!-- 港股特点总结 -->
+  <rect x="990" y="520" width="870" height="140" rx="8" fill="#17a589" fill-opacity="0.06" stroke="#17a589" stroke-width="1" stroke-opacity="0.2"/>
+  <text x="1010" y="555" font-family="Microsoft YaHei" font-size="18" font-weight="bold" fill="#17a589">港股特点</text>
+  <text x="1010" y="585" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 纯创新药含量更高，Biotech/Biopharma为主</text>
+  <text x="1010" y="610" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 含A股稀缺标的(百济、信达、康方)，全球化程度高</text>
+  <text x="1010" y="635" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 弹性更大，涨跌幅度> A股，适合定投</text>
+  <text x="1010" y="660" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">• 前十大集中度~68%，弹性更高波动更大</text>
+
+  <!-- 底部：>4%重仓股标注 -->
+  <rect x="60" y="700" width="1820" height="120" rx="10" fill="#ffffff" fill-opacity="0.03" stroke="#e67e22" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="80" y="735" font-family="Microsoft YaHei" font-size="18" font-weight="bold" fill="#e67e22">>4%重仓股汇总</text>
+  <text x="80" y="770" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">A股：药明康德(11.5%)｜恒瑞医药(10.2%)｜科伦药业(4.5%)</text>
+  <text x="80" y="800" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">港股：石药集团(10.4%)｜药明生物(10.2%)｜百济神州(9.9%)｜信达生物(9.3%)｜康方生物(8.4%)｜中国生物制药(7.4%)</text>
+
+  <!-- 页码 -->
+  <text x="960" y="1030" font-family="Microsoft YaHei" font-size="14" fill="#5a7a7a" text-anchor="middle">2 / 4</text>
+</svg>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>飞书API测试</title></head>
+<body>
+<h2>正在测试飞书API连接...</h2>
+<div id="result">等待中...</div>
+<script>
+fetch("https://open.feishu.cn/open-apis/bot/v2/hook/78352ea0-ceee-4fd9-932b-dafabac15087", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+        msg_type: "text",
+        content: { text: "郑公泽指数投资日报 - 测试消息" }
+    })
+})
+.then(r => r.json())
+.then(d => {
+    document.getElementById("result").innerHTML = "<pre>" + JSON.stringify(d, null, 2) + "</pre>";
+    document.title = "测试结果";
+})
+.catch(e => {
+    document.getElementById("result").innerHTML = "<p style='color:red'>错误: " + e.message + "</p>";
+    document.title = "测试失败";
+});
+</script>
+</body>
+</html>

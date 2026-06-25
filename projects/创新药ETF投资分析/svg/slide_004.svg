@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="100%" stop-color="#0d1a2e"/>
+    </linearGradient>
+    <linearGradient id="card1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a3a5c" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0a1628" stop-opacity="0.5"/>
+    </linearGradient>
+    <linearGradient id="card2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d4f3f" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0a1628" stop-opacity="0.5"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bgGrad)"/>
+
+  <!-- 标题 -->
+  <text x="960" y="70" font-family="Microsoft YaHei" font-size="36" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="4">创新药科学估值体系 &amp; 投资建议</text>
+  <line x1="610" y1="95" x2="1310" y2="95" stroke="#e67e22" stroke-width="2" stroke-opacity="0.5"/>
+
+  <!-- ========== 左侧：估值指标 ========== -->
+  <rect x="40" y="120" width="900" height="460" rx="12" fill="url(#card1)" stroke="#3498db" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="60" y="165" font-family="Microsoft YaHei" font-size="22" font-weight="bold" fill="#3498db">为什么传统PE/PB不适用于创新药？</text>
+  <text x="60" y="200" font-family="Microsoft YaHei" font-size="14" fill="#95a5a6">传统PE/PB基于"当前已有利润"，而创新药研发周期长(8-10年)、早期无收入、失败率高，PE为负或极高，完全不反映企业真实价值。</text>
+
+  <text x="60" y="250" font-family="Microsoft YaHei" font-size="20" font-weight="bold" fill="#e67e22">科学估值体系（从宏观到微观）</text>
+
+  <!-- 指标1 -->
+  <rect x="60" y="275" width="420" height="135" rx="8" fill="#ffffff" fill-opacity="0.04" stroke="#e67e22" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="80" y="305" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#e67e22">① rNPV（风险调整净现值法）</text>
+  <text x="80" y="330" font-family="Microsoft YaHei" font-size="13" fill="#ecf0f1">国际通用"金标准"估值方法</text>
+  <text x="80" y="352" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">公式：∑[峰值销售 × NPV因子 × 临床成功率]</text>
+  <text x="80" y="372" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">临床成功率：I期≈10% → II期≈30% → III期≈60% → 获批≈85%</text>
+  <text x="80" y="395" font-family="Microsoft YaHei" font-size="12" fill="#7f8c8d">需专业数据库支撑，适合投研机构</text>
+
+  <!-- 指标2 -->
+  <rect x="500" y="275" width="420" height="135" rx="8" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="520" y="305" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#17a589">② EV/Sales（企业价值/销售收入）</text>
+  <text x="520" y="330" font-family="Microsoft YaHei" font-size="13" fill="#ecf0f1">适合有营收、尚未盈利的创新药企</text>
+  <text x="520" y="352" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">反映市场为每单位收入支付的溢价</text>
+  <text x="520" y="372" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">对比同行业可比公司分位数更有效</text>
+  <text x="520" y="395" font-family="Microsoft YaHei" font-size="12" fill="#7f8c8d">适合ETF投资者横向对比行业热度</text>
+
+  <!-- 指标3 -->
+  <rect x="60" y="425" width="420" height="135" rx="8" fill="#ffffff" fill-opacity="0.04" stroke="#17a589" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="80" y="455" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#17a589">③ 市研率（市值/研发费用）</text>
+  <text x="80" y="480" font-family="Microsoft YaHei" font-size="13" fill="#ecf0f1">反映市场对研发投入的估值溢价</text>
+  <text x="80" y="502" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">越低说明研发投入被低估，潜在价值越大</text>
+  <text x="80" y="522" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">适合对比同类Biotech公司的研发效率</text>
+  <text x="80" y="545" font-family="Microsoft YaHei" font-size="12" fill="#7f8c8d">小白友好：市研率低=研发投入性价比高</text>
+
+  <!-- 指标4 -->
+  <rect x="500" y="425" width="420" height="135" rx="8" fill="#ffffff" fill-opacity="0.04" stroke="#3498db" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="520" y="455" font-family="Microsoft YaHei" font-size="17" font-weight="bold" fill="#3498db">④ 管线价值比（Pipeline/市值）</text>
+  <text x="520" y="480" font-family="Microsoft YaHei" font-size="13" fill="#ecf0f1">定性+定量综合评估管线潜力</text>
+  <text x="520" y="502" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">关注：III期临床数量、NDA/BLA申请量</text>
+  <text x="520" y="522" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">海外授权金额、合作伙伴质量</text>
+  <text x="520" y="545" font-family="Microsoft YaHei" font-size="12" fill="#7f8c8d">结合ASCO/AACR数据发布节点使用</text>
+
+  <!-- ========== 右侧：投资建议 ========== -->
+  <rect x="960" y="120" width="920" height="460" rx="12" fill="url(#card2)" stroke="#17a589" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="980" y="165" font-family="Microsoft YaHei" font-size="22" font-weight="bold" fill="#17a589">ETF代码、优缺点对比与投资建议</text>
+
+  <text x="980" y="210" font-family="Microsoft YaHei" font-size="18" font-weight="bold" fill="#e67e22">重点推荐ETF一览</text>
+
+  <!-- ETF表头 -->
+  <rect x="980" y="230" width="160" height="32" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="990" y="251" font-family="Microsoft YaHei" font-size="14" font-weight="bold" fill="#17a589">ETF名称</text>
+  <rect x="1145" y="230" width="100" height="32" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="1155" y="251" font-family="Microsoft YaHei" font-size="14" font-weight="bold" fill="#17a589">代码</text>
+  <rect x="1250" y="230" width="270" height="32" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="1260" y="251" font-family="Microsoft YaHei" font-size="14" font-weight="bold" fill="#17a589">优点</text>
+  <rect x="1525" y="230" width="335" height="32" rx="4" fill="#17a589" fill-opacity="0.2"/>
+  <text x="1535" y="251" font-family="Microsoft YaHei" font-size="14" font-weight="bold" fill="#17a589">缺点</text>
+
+  <!-- 创新药ETF 159992 -->
+  <text x="990" y="285" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">创新药ETF</text>
+  <text x="1155" y="285" font-family="Microsoft YaHei" font-size="13" fill="#bdc3c7">159992</text>
+  <text x="1260" y="285" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">A股龙头全覆盖，场外联接便捷</text>
+  <text x="1535" y="285" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">CXO受中美关系影响大</text>
+  <rect x="980" y="293" width="880" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 港股通创新药 159570 -->
+  <text x="990" y="315" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">港股通创新药</text>
+  <text x="1155" y="315" font-family="Microsoft YaHei" font-size="13" fill="#bdc3c7">159570</text>
+  <text x="1260" y="315" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">纯创新药含量最高，规模264亿</text>
+  <text x="1535" y="315" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">波动大，缺乏场外联接公布</text>
+  <rect x="980" y="323" width="880" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 港股创新药 159567 -->
+  <text x="990" y="345" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">港股创新药</text>
+  <text x="1155" y="345" font-family="Microsoft YaHei" font-size="13" fill="#bdc3c7">159567</text>
+  <text x="1260" y="345" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">场外联接023929/023930</text>
+  <text x="1535" y="345" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">规模74亿，流动性略弱</text>
+  <rect x="980" y="353" width="880" height="1" fill="#ffffff" fill-opacity="0.05"/>
+
+  <!-- 创新药天弘 517380 -->
+  <text x="990" y="375" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">创新药天弘</text>
+  <text x="1155" y="375" font-family="Microsoft YaHei" font-size="13" fill="#bdc3c7">517380</text>
+  <text x="1260" y="375" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">A+H跨市场，场外014564/014565</text>
+  <text x="1535" y="375" font-family="Microsoft YaHei" font-size="12" fill="#95a5a6">跨市场折溢价管理复杂</text>
+
+  <!-- 场外基金汇总 -->
+  <rect x="980" y="405" width="880" height="80" rx="8" fill="#ffffff" fill-opacity="0.04" stroke="#e67e22" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="1000" y="432" font-family="Microsoft YaHei" font-size="15" font-weight="bold" fill="#e67e22">场外基金汇总（无需证券账户，支付宝/天天基金可买）</text>
+  <text x="1000" y="458" font-family="Microsoft YaHei" font-size="13" fill="#ecf0f1">银华中证创新药ETF联接 A:012781 / C:012782｜天弘创新药ETF联接 A:014564 / C:014565</text>
+  <text x="1000" y="478" font-family="Microsoft YaHei" font-size="13" fill="#ecf0f1">银华港股创新药ETF联接 A:023929 / C:023930｜景顺长城港股创新药ETF联接 A:023597 / C:023598</text>
+
+  <!-- 底部投资建议 -->
+  <rect x="40" y="600" width="1840" height="220" rx="12" fill="#ffffff" fill-opacity="0.03" stroke="#e67e22" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="80" y="645" font-family="Microsoft YaHei" font-size="22" font-weight="bold" fill="#e67e22">投资策略建议</text>
+
+  <text x="80" y="690" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#17a589">核心逻辑：组合配置 A股 + 港股，把握两岸创新药差异化机会</text>
+
+  <text x="80" y="725" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">① 基金组合方案（推荐）：</text>
+  <text x="80" y="752" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">稳建型（A股为主）：60% 159992（A股）+ 40% 159570（港股）</text>
+  <text x="80" y="775" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">进取型（港股为主）：30% 159992（A股）+ 70% 159570/159567（港股）</text>
+
+  <text x="1000" y="725" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">② 定投策略：</text>
+  <text x="1000" y="752" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">每周/双周定投，降低择时风险</text>
+  <text x="1000" y="775" font-family="Microsoft YaHei" font-size="13" fill="#95a5a6">关注ASCO/AACR等催化节点适当加仓</text>
+
+  <text x="80" y="805" font-family="Microsoft YaHei" font-size="14" fill="#ecf0f1">③ 估值参考：通过市研率+EV/Sales组合判断行业冷热，避免追涨杀跌</text>
+
+  <!-- 页码 -->
+  <text x="960" y="1030" font-family="Microsoft YaHei" font-size="14" fill="#5a7a7a" text-anchor="middle">4 / 4</text>
+</svg>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Date>2026-06-25T00:00:00</Date>
+    <Author>AI</Author>
+    <Description>AI算力产业链每日资讯 — 采集新闻、构建前端、部署OSS，工作日08:00执行</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <CalendarTrigger>
+      <StartBoundary>2026-06-25T08:00:00</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByWeek>
+        <DaysOfWeek>
+          <Monday />
+          <Tuesday />
+          <Wednesday />
+          <Thursday />
+          <Friday />
+        </DaysOfWeek>
+        <WeeksInterval>1</WeeksInterval>
+      </ScheduleByWeek>
+    </CalendarTrigger>
+  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <Enabled>true</Enabled>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>true</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <ExecutionTimeLimit>PT2H</ExecutionTimeLimit>
+    <Priority>7</Priority>
+    <RestartOnFailure>
+      <Interval>PT5M</Interval>
+      <Count>3</Count>
+    </RestartOnFailure>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>python</Command>
+      <Arguments>production_pipeline.py</Arguments>
+      <WorkingDirectory>D:\TRAE SOLO CN\投资指数资讯</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>

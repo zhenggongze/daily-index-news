@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Server酱POST测试</title></head>
+<body>
+<h2>正在发送POST请求到Server酱...</h2>
+<pre id="result">等待中...</pre>
+<script>
+fetch('https://sctapi.ftqq.com/SCT349597Tmgw1qxFT3dgo3DhSxUNK7Tqi.send', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'title=' + encodeURIComponent('POST通道测试成功！') + '&desp=' + encodeURIComponent('如果你在微信看到这条消息，说明通过浏览器POST到Server酱的方案可行！\n\n这意味着完整的指数投资日报可以通过POST推送，不再受URL长度限制！')
+})
+.then(r => r.json())
+.then(data => {
+    document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+})
+.catch(err => {
+    document.getElementById('result').textContent = 'ERROR: ' + err.message;
+});
+</script>
+</body>
+</html>

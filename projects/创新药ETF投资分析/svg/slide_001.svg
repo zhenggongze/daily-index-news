@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="50%" stop-color="#1a3a5c"/>
+      <stop offset="100%" stop-color="#0d4f3f"/>
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#17a589"/>
+      <stop offset="50%" stop-color="#3498db"/>
+      <stop offset="100%" stop-color="#17a589"/>
+    </linearGradient>
+    <linearGradient id="hexGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#17a589" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#3498db" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1920" height="1080" fill="url(#bgGrad)"/>
+
+  <!-- 左上装饰六边形 -->
+  <polygon points="60,120 120,90 180,120 180,180 120,210 60,180" fill="url(#hexGrad)" stroke="#17a589" stroke-width="1.5" stroke-opacity="0.3"/>
+  <polygon points="180,120 240,90 300,120 300,180 240,210 180,180" fill="url(#hexGrad)" stroke="#17a589" stroke-width="1" stroke-opacity="0.2"/>
+  <polygon points="300,120 360,90 420,120 420,180 360,210 300,180" fill="url(#hexGrad)" stroke="#17a589" stroke-width="1" stroke-opacity="0.15"/>
+
+  <!-- 右下装饰六边形 -->
+  <polygon points="1540,860 1600,830 1660,860 1660,920 1600,950 1540,920" fill="url(#hexGrad)" stroke="#17a589" stroke-width="1.5" stroke-opacity="0.3"/>
+  <polygon points="1660,860 1720,830 1780,860 1780,920 1720,950 1660,920" fill="url(#hexGrad)" stroke="#17a589" stroke-width="1" stroke-opacity="0.2"/>
+
+  <!-- 中间装饰线 -->
+  <line x1="200" y1="540" x2="1720" y2="540" stroke="url(#lineGrad)" stroke-width="1" stroke-opacity="0.15"/>
+
+  <!-- DNA双螺旋装饰线 -->
+  <path d="M1820,200 Q1850,250 1820,300 Q1790,350 1820,400 Q1850,450 1820,500 Q1790,550 1820,600 Q1850,650 1820,700 Q1790,750 1820,800 Q1850,850 1820,900" fill="none" stroke="#17a589" stroke-width="1.5" stroke-opacity="0.2"/>
+  <path d="M1840,200 Q1810,250 1840,300 Q1870,350 1840,400 Q1810,450 1840,500 Q1870,550 1840,600 Q1810,650 1840,700 Q1870,750 1840,800 Q1810,850 1840,900" fill="none" stroke="#3498db" stroke-width="1.5" stroke-opacity="0.2"/>
+
+  <!-- 标题区域 -->
+  <rect x="360" y="200" width="1200" height="6" rx="3" fill="url(#lineGrad)"/>
+
+  <text x="960" y="320" font-family="Microsoft YaHei" font-size="68" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="6">创新药ETF投资分析报告</text>
+
+  <text x="960" y="410" font-family="Microsoft YaHei" font-size="32" fill="#a8d8d9" text-anchor="middle" letter-spacing="4">A股 + 港股 双市场创新药ETF投资策略</text>
+
+  <!-- 分隔线 -->
+  <line x1="760" y1="460" x2="1160" y2="460" stroke="#17a589" stroke-width="2" stroke-opacity="0.6"/>
+
+  <!-- 关键数据卡片 -->
+  <rect x="280" y="520" width="380" height="140" rx="12" fill="#ffffff" fill-opacity="0.06" stroke="#17a589" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="470" y="575" font-family="Microsoft YaHei" font-size="22" fill="#17a589" text-anchor="middle">A股代表</text>
+  <text x="470" y="615" font-family="Microsoft YaHei" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">创新药ETF(159992)</text>
+  <text x="470" y="645" font-family="Microsoft YaHei" font-size="16" fill="#95a5a6" text-anchor="middle">银华中证创新药产业ETF</text>
+
+  <rect x="770" y="520" width="380" height="140" rx="12" fill="#ffffff" fill-opacity="0.06" stroke="#3498db" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="960" y="575" font-family="Microsoft YaHei" font-size="22" fill="#3498db" text-anchor="middle">港股代表</text>
+  <text x="960" y="615" font-family="Microsoft YaHei" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">港股通创新药ETF(159570)</text>
+  <text x="960" y="645" font-family="Microsoft YaHei" font-size="16" fill="#95a5a6" text-anchor="middle">汇添富国证港股通创新药ETF</text>
+
+  <rect x="1260" y="520" width="380" height="140" rx="12" fill="#ffffff" fill-opacity="0.06" stroke="#e67e22" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="1450" y="575" font-family="Microsoft YaHei" font-size="22" fill="#e67e22" text-anchor="middle">沪港通综合</text>
+  <text x="1450" y="615" font-family="Microsoft YaHei" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">创新药ETF天弘(517380)</text>
+  <text x="1450" y="645" font-family="Microsoft YaHei" font-size="16" fill="#95a5a6" text-anchor="middle">恒生沪港深创新药精选50</text>
+
+  <!-- 底部提示 -->
+  <text x="960" y="780" font-family="Microsoft YaHei" font-size="18" fill="#7f8c8d" text-anchor="middle">适合投资小白 · 一键布局创新药赛道 · 无需研究个股</text>
+
+  <!-- 底部标签 -->
+  <rect x="780" y="850" width="360" height="50" rx="25" fill="#17a589" fill-opacity="0.15" stroke="#17a589" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="960" y="882" font-family="Microsoft YaHei" font-size="20" fill="#17a589" text-anchor="middle">⚠ 投资有风险，入市需谨慎</text>
+
+  <!-- 页码 -->
+  <text x="960" y="1020" font-family="Microsoft YaHei" font-size="14" fill="#5a7a7a" text-anchor="middle">1 / 4</text>
+</svg>

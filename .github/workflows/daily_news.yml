@@ -96,13 +96,13 @@ jobs:
       - name: 部署到 OSS + 刷新 CDN
         working-directory: news_site
         run: |
+          set +e
           python ../workflow_logger.py --record "部署到 OSS" "running"
-          output=$(python deploy_minimal.py 2>&1)
+          python deploy_minimal.py 2>&1
           rc=$?
-          echo "$output"
+          echo "exit_code=$rc"
           if [ $rc -ne 0 ]; then
-            err=$(echo "$output" | tail -5)
-            python ../workflow_logger.py --record "部署到 OSS" "failure" "$err"
+            python ../workflow_logger.py --record "部署到 OSS" "failure" "deploy_minimal.py exit code $rc"
             exit $rc
           fi
           python ../workflow_logger.py --record "部署到 OSS" "success"

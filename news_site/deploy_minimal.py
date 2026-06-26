@@ -1,4 +1,4 @@
-"""最小化部署 — 用 requests 直调 OSS + CDN API，绕过 pyopenssl 兼容问题"""
+"""最小化部署 — 用 requests 直调 OSS + CDN API"""
 import os, sys, hashlib, hmac, base64, uuid
 from datetime import datetime, timezone
 from urllib.parse import quote
@@ -7,8 +7,9 @@ import requests
 AK_ID = os.environ.get("OSS_AK_ID", "")
 AK_SECRET = os.environ.get("OSS_AK_SECRET", "")
 if not AK_ID or not AK_SECRET:
-    print("❌ 错误: 请设置环境变量 OSS_AK_ID 和 OSS_AK_SECRET")
+    print("ERROR_MISSING_CREDS")
     sys.exit(1)
+
 BUCKET = "portfolio-analysis-hosting"
 REGION = "oss-cn-hangzhou"
 OSS_URL = f"https://{BUCKET}.{REGION}.aliyuncs.com"
@@ -49,6 +50,17 @@ def sign_aliyun(params):
     h = hmac.new((AK_SECRET + "&").encode(), string_to_sign.encode(), hashlib.sha1)
     return base64.b64encode(h.digest()).decode()
 
+def test_oss_connection():
+    date = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
+    headers = {"Date": date, "Content-Type": ""}
+    headers["Authorization"] = sign_oss("GET", headers, f"/{BUCKET}/")
+    r = requests.get(OSS_URL, headers=headers, timeout=10)
+    if r.status_code in (200, 203):
+        print(f"  OSS连接测试: ✅")
+        return True
+    print(f"  OSS连接测试: ❌ HTTP {r.status_code} {r.text[:200]}")
+    return False
+
 def upload(local, oss_key, cache="no-cache"):
     ext = os.path.splitext(local)[1].lower()
     ct = CONTENT_TYPES.get(ext, "application/octet-stream")
@@ -64,7 +76,10 @@ def upload(local, oss_key, cache="no-cache"):
     headers["Authorization"] = sign_oss("PUT", headers, f"/{BUCKET}/{oss_key}")
     r = requests.put(f"{OSS_URL}/{oss_key}", data=data, headers=headers)
     ok = r.status_code in (200, 201)
-    print(f"  {'✅' if ok else '❌'} {oss_key}" + ("" if ok else f" -> {r.status_code} {r.text[:100]}"))
+    if ok:
+        print(f"  ✅ {oss_key}")
+    else:
+        print(f"  ❌ {oss_key} -> {r.status_code} {r.text[:100]}")
 
 def upload_dir(src, prefix):
     c = 0
@@ -103,10 +118,14 @@ print("  部署到 OSS")
 print("=" * 50)
 
 if not os.path.isdir(DIST):
-    print(f"❌ dist/ 不存在 (预期路径: {DIST})，请先执行 npm run build")
+    print("ERROR_MISSING_DIST")
     sys.exit(1)
 if not os.path.isdir(DATA):
-    print(f"❌ data/ 不存在 (预期路径: {DATA})")
+    print("ERROR_MISSING_DATA")
+    sys.exit(1)
+
+if not test_oss_connection():
+    print("ERROR_OSS_CONN")
     sys.exit(1)
 
 print("\n[1] 上传 dist/...")

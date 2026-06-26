@@ -406,12 +406,7 @@ def update_website_index():
         json.dump({"dates": sorted_dates, "count": len(sorted_dates)}, f, ensure_ascii=False, indent=2)
 
 def main():
-    today = date.today()
-    if today.weekday() >= 5:
-        print(f"[SKIP] 周末 ({today})，停止执行")
-        return
-
-    today_str = today.strftime("%Y-%m-%d")
+    today_str = date.today().strftime("%Y-%m-%d")
     print("=" * 50)
     print(f"[AI算力每日资讯] {today_str}")
     print("=" * 50)

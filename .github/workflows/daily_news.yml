@@ -27,7 +27,7 @@ jobs:
       - name: 安装 Python 依赖
         run: |
           python workflow_logger.py --record "安装依赖" "running"
-          pip install feedparser requests urllib3
+          pip install feedparser requests urllib3 oss2
           python workflow_logger.py --record "安装依赖" "success"
 
       - name: 运行数据流水线

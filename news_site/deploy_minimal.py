@@ -117,16 +117,17 @@ print("=" * 50)
 print("  部署到 OSS")
 print("=" * 50)
 
-if not os.path.isdir(DIST):
-    print("ERROR_MISSING_DIST")
-    sys.exit(1)
-if not os.path.isdir(DATA):
-    print("ERROR_MISSING_DATA")
+def fail(msg):
+    print(f"!!DEPLOY_FAIL!! {msg}", flush=True)
     sys.exit(1)
 
+if not os.path.isdir(DIST):
+    fail("DIST_NOT_FOUND")
+if not os.path.isdir(DATA):
+    fail("DATA_NOT_FOUND")
+
 if not test_oss_connection():
-    print("ERROR_OSS_CONN")
-    sys.exit(1)
+    fail("OSS_CONN_FAIL")
 
 print("\n[1] 上传 dist/...")
 n1 = upload_dir(DIST, "news")

@@ -104,7 +104,7 @@ jobs:
           echo "$deploy_out"
           echo "--- exit code: $rc ---"
           if [ $rc -ne 0 ]; then
-            first_err=$(echo "$deploy_out" | grep -E "ERROR_|❌|error" | head -3)
+            first_err=$(echo "$deploy_out" | grep "!!DEPLOY_FAIL!!" | head -1)
             python ../workflow_logger.py --record "部署到 OSS" "failure" "exit=$rc: $first_err"
             exit $rc
           fi

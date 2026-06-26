@@ -8,7 +8,6 @@ GitHub Actions 工作流日志系统 v2
 """
 import os, sys, json, time
 from datetime import datetime, timezone
-import oss2
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 LOGS_DIR = os.path.join(BASE, "logs", "workflow")
@@ -27,6 +26,7 @@ _oss_bucket = None
 def get_oss_bucket():
     global _oss_bucket
     if _oss_bucket is None and OSS_AK_ID and OSS_AK_SECRET:
+        import oss2
         auth = oss2.Auth(OSS_AK_ID, OSS_AK_SECRET)
         _oss_bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET, connect_timeout=15)
     return _oss_bucket

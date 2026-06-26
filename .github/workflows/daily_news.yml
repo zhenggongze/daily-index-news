@@ -98,11 +98,14 @@ jobs:
         run: |
           set +e
           python ../workflow_logger.py --record "部署到 OSS" "running"
-          python deploy_minimal.py 2>&1
+          deploy_out=$(python deploy_minimal.py 2>&1)
           rc=$?
-          echo "exit_code=$rc"
+          echo "--- deploy output ---"
+          echo "$deploy_out"
+          echo "--- exit code: $rc ---"
           if [ $rc -ne 0 ]; then
-            python ../workflow_logger.py --record "部署到 OSS" "failure" "deploy_minimal.py exit code $rc"
+            first_err=$(echo "$deploy_out" | grep -E "ERROR_|❌|error" | head -3)
+            python ../workflow_logger.py --record "部署到 OSS" "failure" "exit=$rc: $first_err"
             exit $rc
           fi
           python ../workflow_logger.py --record "部署到 OSS" "success"

@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-GitHub Actions 工作流日志系统 v1
-功能：收集步骤日志 → 上传OSS归档 → PushDeer通知
+GitHub Actions 工作流日志系统 v2
+功能：收集步骤日志 → 上传OSS归档(oss2 SDK) → PushDeer通知
 模式：
   --record <step_name> <status> [detail]   记录步骤状态
   --finish <run_id>                         汇总并上报
 """
-import os, sys, json, time, hashlib, hmac, base64, uuid
+import os, sys, json, time
 from datetime import datetime, timezone
+import oss2
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 LOGS_DIR = os.path.join(BASE, "logs", "workflow")
@@ -19,7 +20,16 @@ PUSHDEER_URL = "https://api2.pushdeer.com/message/push"
 OSS_AK_ID = os.environ.get("OSS_AK_ID", "")
 OSS_AK_SECRET = os.environ.get("OSS_AK_SECRET", "")
 OSS_BUCKET = "portfolio-analysis-hosting"
-OSS_REGION = "oss-cn-hangzhou"
+OSS_ENDPOINT = "https://oss-cn-hangzhou.aliyuncs.com"
+
+_oss_bucket = None
+
+def get_oss_bucket():
+    global _oss_bucket
+    if _oss_bucket is None and OSS_AK_ID and OSS_AK_SECRET:
+        auth = oss2.Auth(OSS_AK_ID, OSS_AK_SECRET)
+        _oss_bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET, connect_timeout=15)
+    return _oss_bucket
 
 
 def log_path(run_id):
@@ -49,26 +59,24 @@ def cmd_record():
 
 
 def upload_to_oss(data, oss_key):
-    if not OSS_AK_ID or not OSS_AK_SECRET:
+    bucket = get_oss_bucket()
+    if not bucket:
         print("[OSS] 跳过：未配置 OSS_AK_ID/OSS_AK_SECRET")
         return False
-    import requests
-    url = f"https://{OSS_BUCKET}.{OSS_REGION}.aliyuncs.com/{oss_key}"
     body = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
-    md5 = base64.b64encode(hashlib.md5(body).digest()).decode()
-    date = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
-    ct = "application/json; charset=utf-8"
-    resource = f"/{OSS_BUCKET}/{oss_key}"
-    sts = f"PUT\n{md5}\n{ct}\n{date}\n{resource}"
-    sig = base64.b64encode(hmac.new(OSS_AK_SECRET.encode(), sts.encode(), hashlib.sha1).digest()).decode()
-    headers = {
-        "Content-Type": ct, "Content-MD5": md5, "Date": date,
-        "Authorization": f"OSS {OSS_AK_ID}:{sig}",
-    }
-    r = requests.put(url, data=body, headers=headers)
-    ok = r.status_code in (200, 201, 204)
-    print(f"[OSS] {'✅' if ok else '❌'} news/logs/{oss_key} ({r.status_code})")
-    return ok
+    try:
+        result = bucket.put_object(oss_key, body, headers={
+            "Content-Type": "application/json; charset=utf-8",
+        })
+        ok = result.status == 200
+        print(f"[OSS] {'✅' if ok else '❌'} {oss_key} ({result.status})")
+        return ok
+    except oss2.exceptions.OssError as e:
+        print(f"[OSS] ❌ {oss_key} -> OssError {e.status} {e.code} {e.message[:100]}")
+        return False
+    except Exception as e:
+        print(f"[OSS] ❌ {oss_key} -> {type(e).__name__}: {str(e)[:100]}")
+        return False
 
 
 def push_notification(title, body, success):

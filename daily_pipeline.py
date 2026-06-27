@@ -411,6 +411,21 @@ def main():
     print(f"[AI算力每日资讯] {today_str}")
     print("=" * 50)
 
+    # 幂等检查：今天数据已生成则跳过（避免多个 cron 时间点重复推送）
+    # 设置环境变量 FORCE_REFRESH=1 可强制重新生成
+    if os.environ.get("FORCE_REFRESH") != "1":
+        today_file = os.path.join(DATA_DIR, f"{today_str}.json")
+        if os.path.exists(today_file):
+            try:
+                with open(today_file, encoding="utf-8") as f:
+                    d = json.load(f)
+                if d.get("count", 0) > 0:
+                    print(f"✅ 今日数据已存在({d['count']}条)，跳过重复生成")
+                    print(f"   如需强制重新生成，设置环境变量 FORCE_REFRESH=1")
+                    return d["count"]
+            except Exception:
+                pass  # 文件损坏，重新生成
+
     print("\n[1/5] RSS采集...")
     all_raw = []
     for label, url in RSS_SOURCES:

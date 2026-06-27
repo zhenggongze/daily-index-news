@@ -2,7 +2,9 @@ name: AI算力产业链每日资讯
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    # 北京时间 08:07 主触发 + 08:22 备用（避开整点高负载，GitHub schedule 整点易被跳过）
+    - cron: '7 0 * * *'
+    - cron: '22 0 * * *'
   workflow_dispatch:
 
 env:

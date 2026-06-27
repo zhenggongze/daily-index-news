@@ -212,7 +212,15 @@ def cmd_finish():
             f"🌐 访问: https://portfolio-analysis.top/news/index.html"
         )
 
-    push_notification("AI算力每日资讯 工作流报告", body, final_status == "success")
+    # 幂等：若数据流水线跳过重复生成（说明今天已由更早触发的运行推送过），本次不重复推送
+    pipeline_skipped = any(
+        r.get("step") == "运行数据流水线" and "跳过重复生成" in r.get("detail", "")
+        for r in records
+    )
+    if pipeline_skipped and final_status == "success":
+        print("\n  ℹ️ 今日数据已由更早触发的运行处理，跳过重复推送")
+    else:
+        push_notification("AI算力每日资讯 工作流报告", body, final_status == "success")
 
     with open(lp, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)

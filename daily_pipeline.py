@@ -395,6 +395,51 @@ def quick_ai_summary(title, summary):
         clean = clean[:397] + "..."
     return clean
 
+def load_recent_seen(days=7):
+    """从 OSS 拉取最近 days 天的数据文件，建立已采集的 URL 和标题集合（用于跨日去重）"""
+    seen_urls = set()
+    seen_titles = set()
+    base = "https://portfolio-analysis.top/news/data"
+    try:
+        r = requests.get(f"{base}/index.json", timeout=10)
+        if r.status_code != 200:
+            return seen_urls, seen_titles
+        all_dates = r.json().get("dates", [])
+    except Exception:
+        return seen_urls, seen_titles
+
+    # 只取最近 days 天（按日期字符串倒序）
+    recent = sorted(all_dates, reverse=True)[:days]
+    for ds in recent:
+        try:
+            r = requests.get(f"{base}/{ds}.json", timeout=10)
+            if r.status_code != 200:
+                continue
+            news = r.json().get("news", [])
+            for n in news:
+                u = (n.get("url") or "").strip()
+                t = (n.get("title") or "").strip().lower()
+                if u:
+                    seen_urls.add(u)
+                if t:
+                    seen_titles.add(t)
+        except Exception:
+            continue
+    print(f"  跨日去重: 加载最近 {len(recent)} 天数据，已有 {len(seen_urls)} 个URL、{len(seen_titles)} 个标题")
+    return seen_urls, seen_titles
+
+
+def is_dup_cross_day(item, seen_urls, seen_titles):
+    """URL 完全匹配 或 标题完全匹配 → 判定为跨日重复"""
+    u = (item.get("url") or "").strip()
+    t = (item.get("title") or "").strip().lower()
+    if u and u in seen_urls:
+        return True
+    if t and t in seen_titles:
+        return True
+    return False
+
+
 def update_website_index():
     idx_path = os.path.join(DATA_DIR, "index.json")
     dates = set()
@@ -453,15 +498,24 @@ def main():
     print(f"  原始采集: {len(all_raw)}条")
 
     print("\n[2/5] 去重+过滤...")
+    # 跨日去重：从 OSS 加载最近 7 天已采集的 URL 和标题
+    seen_urls, seen_titles = load_recent_seen(days=7)
+    cross_day_dup = 0
+
+    # 当日去重 + 跨日去重
     seen = set()
     deduped = []
     for e in all_raw:
         key = e["title"][:60].strip().lower()
         if key and key not in seen:
             seen.add(key)
+            if is_dup_cross_day(e, seen_urls, seen_titles):
+                cross_day_dup += 1
+                continue
             deduped.append(e)
     filtered = [e for e in deduped if not should_block(e["title"], e.get("summary", "")) and is_interesting(e["title"], e.get("summary", ""))]
-    print(f"  去重: {len(deduped)} → 过滤: {len(filtered)}")
+    print(f"  跨日重复剔除: {cross_day_dup} 条")
+    print(f"  当日去重: {len(deduped)} → 过滤: {len(filtered)}")
 
     print("\n[3/5] 打分+精选...")
     scored = [(score_news_item(e), e) for e in filtered]

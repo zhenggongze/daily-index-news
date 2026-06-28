@@ -59,6 +59,7 @@ sg_*.txt
 *.log
 sina_raw.json
 daily_data_*.json
+_full_diag.py
 feishu_*.json
 debug_*.js
 final_*.js

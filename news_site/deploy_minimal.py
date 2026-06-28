@@ -2,7 +2,7 @@
 
 替换手写 HMAC-SHA1 签名，从根因解决 OSS 部署失败问题。
 """
-import os, sys, uuid
+import os, sys, json, uuid
 from datetime import datetime, timezone
 from urllib.parse import quote
 import requests
@@ -159,8 +159,43 @@ print(f"  成功 {n1_ok} 个, 失败 {n1_fail} 个")
 if n1_fail > 0:
     fail(f"DIST_UPLOAD_FAILED count={n1_fail}")
 
+print("\n[2] 合并 OSS 上已有数据文件并重建 index.json ...")
+DATA_PREFIX = "news/data"
+existing_oss = set()
+try:
+    for obj in oss2.ObjectIteratorV2(bucket, prefix=DATA_PREFIX + "/"):
+        key = obj.key
+        if key.endswith(".json"):
+            fname = key.split("/")[-1]
+            if fname not in ("index.json", "breakthrough.json"):
+                existing_oss.add(fname)
+    print(f"  OSS 上已有数据文件: {sorted(existing_oss)}")
+except Exception as e:
+    print(f"  列出 OSS 已有文件失败(非致命): {e}")
+local_files = set()
+for fname in os.listdir(DATA):
+    if fname.endswith(".json") and fname not in ("index.json", "breakthrough.json"):
+        local_files.add(fname)
+all_dates = sorted(local_files | existing_oss)
+print(f"  合并后全部日期: {all_dates}")
+compact_dates = [f.replace(".json", "") for f in all_dates]
+idx_path = os.path.join(DATA, "index.json")
+with open(idx_path, "w", encoding="utf-8") as f:
+    json.dump({"dates": compact_dates, "count": len(compact_dates)}, f, ensure_ascii=False, indent=2)
+missing = existing_oss - local_files
+if missing:
+    print(f"  需要从 OSS 下载缺失文件: {sorted(missing)}")
+    for fname in sorted(missing):
+        oss_key = f"{DATA_PREFIX}/{fname}"
+        local_path = os.path.join(DATA, fname)
+        try:
+            bucket.get_object_to_file(oss_key, local_path)
+            print(f"    ✅ 已下载 {fname}")
+        except Exception as e:
+            print(f"    ❌ 下载 {fname} 失败: {e}")
+
 print("\n[2] 上传 data/...")
-n2_ok, n2_fail = upload_dir(DATA, "news/data")
+n2_ok, n2_fail = upload_dir(DATA, DATA_PREFIX)
 print(f"  成功 {n2_ok} 个, 失败 {n2_fail} 个")
 if n2_fail > 0:
     fail(f"DATA_UPLOAD_FAILED count={n2_fail}")

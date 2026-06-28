@@ -16,7 +16,7 @@ export default function App() {
   const [currentDateStr, setCurrentDateStr] = useState('');
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [mlFilter, setMlFilter] = useState<MainlineFilter>([]);
-  const [impFilter, setImpFilter] = useState<ImpactFilter>(['high']);
+  const [impFilter, setImpFilter] = useState<ImpactFilter>(['high', 'mid']);
 
   useEffect(() => {
     fetch(`${BASE}data/index.json?t=${Date.now()}`)

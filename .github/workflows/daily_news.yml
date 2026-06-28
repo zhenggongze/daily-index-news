@@ -6,6 +6,11 @@ on:
     - cron: '7 0 * * *'
     - cron: '22 0 * * *'
   workflow_dispatch:
+    inputs:
+      skip_pipeline:
+        description: '跳过数据流水线，仅重新构建部署（数据已有时使用）'
+        type: boolean
+        default: false
 
 env:
   RUN_ID: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
@@ -13,7 +18,7 @@ env:
 jobs:
   daily-news:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
 
     steps:
       - name: 检出代码
@@ -33,6 +38,7 @@ jobs:
           python workflow_logger.py --record "安装依赖" "success"
 
       - name: 运行数据流水线
+        if: ${{ ! inputs.skip_pipeline }}
         run: |
           python workflow_logger.py --record "运行数据流水线" "running"
           output=$(python daily_pipeline.py 2>&1)
@@ -49,6 +55,7 @@ jobs:
           DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
 
       - name: 验证数据文件
+        if: ${{ ! inputs.skip_pipeline }}
         run: |
           python workflow_logger.py --record "验证数据文件" "running"
           for f in news_site/public/data/*.json; do

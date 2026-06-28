@@ -396,7 +396,9 @@ def quick_ai_summary(title, summary):
     return clean
 
 def load_recent_seen(days=7):
-    """从 OSS 拉取最近 days 天的数据文件，建立已采集的 URL 和标题集合（用于跨日去重）"""
+    """从 OSS 拉取最近 days 天的数据文件，建立已采集的 URL 和标题集合（用于跨日去重）
+    注意：排除今天，避免重新生成时把自己也去重"""
+    today_str = date.today().strftime("%Y-%m-%d")
     seen_urls = set()
     seen_titles = set()
     base = "https://portfolio-analysis.top/news/data"
@@ -408,8 +410,8 @@ def load_recent_seen(days=7):
     except Exception:
         return seen_urls, seen_titles
 
-    # 只取最近 days 天（按日期字符串倒序）
-    recent = sorted(all_dates, reverse=True)[:days]
+    # 只取最近 days 天，但排除今天（避免重新生成时把自己去重）
+    recent = [d for d in sorted(all_dates, reverse=True) if d != today_str][:days]
     for ds in recent:
         try:
             r = requests.get(f"{base}/{ds}.json", timeout=10)

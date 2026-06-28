@@ -401,9 +401,27 @@ def update_website_index():
     for fname in os.listdir(DATA_DIR):
         if fname.endswith(".json") and fname not in ("index.json", "breakthrough.json"):
             dates.add(fname.replace(".json", ""))
+    try:
+        r = requests.get("https://portfolio-analysis.top/news/data/index.json", timeout=10)
+        if r.status_code == 200:
+            remote = r.json().get("dates", [])
+            dates.update(remote)
+    except Exception:
+        pass
     sorted_dates = sorted(dates)
     with open(idx_path, "w", encoding="utf-8") as f:
         json.dump({"dates": sorted_dates, "count": len(sorted_dates)}, f, ensure_ascii=False, indent=2)
+    for ds in sorted_dates:
+        fpath = os.path.join(DATA_DIR, f"{ds}.json")
+        if not os.path.exists(fpath):
+            try:
+                r = requests.get(f"https://portfolio-analysis.top/news/data/{ds}.json", timeout=10)
+                if r.status_code == 200:
+                    with open(fpath, "w", encoding="utf-8") as f:
+                        json.dump(r.json(), f, ensure_ascii=False, indent=2)
+                    print(f"  ✅ 已从 OSS 补回缺失的数据: {ds}.json")
+            except Exception:
+                pass
 
 def main():
     today_str = date.today().strftime("%Y-%m-%d")

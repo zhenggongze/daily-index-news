@@ -230,9 +230,35 @@ ANALYZE_PROMPT = """你是一个顶级的AI算力/半导体产业链分析师，
 新闻内容："""
 
 
+def enrich_short_summary(title, raw_summary, url):
+    """若原始摘要<300字，尝试从文章URL获取完整内容补充"""
+    if not raw_summary or len(raw_summary) >= 300:
+        return raw_summary
+    if not url:
+        return raw_summary
+    try:
+        resp = requests.get(url, timeout=10, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        })
+        if resp.status_code != 200:
+            return raw_summary
+        text = re.sub(r'<[^>]+>', ' ', resp.text)
+        text = re.sub(r'\s+', ' ', text).strip()
+        enriched = text[:3000] if len(text) > len(raw_summary) else raw_summary
+        if len(enriched) > len(raw_summary):
+            print(f"  原始摘要过短({len(raw_summary)}字)，已从URL补充至{len(enriched)}字")
+            return enriched
+        return raw_summary
+    except Exception:
+        return raw_summary
+
+
 def deepseek_analyze_one(item, index):
     title = item.get("title", "")
-    summary = item.get("_raw_summary", item.get("summary", ""))[:1000]
+    raw = item.get("_raw_summary", item.get("summary", ""))
+    url = item.get("url", "")
+    raw = enrich_short_summary(title, raw, url)
+    summary = raw[:1000]
 
     user_msg = ANALYZE_PROMPT + f"标题：{title}\n内容：{summary}"
 

@@ -11,6 +11,10 @@ on:
         description: '跳过数据流水线，仅重新构建部署（数据已有时使用）'
         type: boolean
         default: false
+      force_refresh:
+        description: '强制重新生成数据（覆盖今日已有数据）'
+        type: boolean
+        default: false
 
 env:
   RUN_ID: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
@@ -53,6 +57,7 @@ jobs:
           python workflow_logger.py --record "运行数据流水线" "success" "$summary"
         env:
           DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
+          FORCE_REFRESH: ${{ inputs.force_refresh == true && '1' || '' }}
 
       - name: 验证数据文件
         if: ${{ ! inputs.skip_pipeline }}

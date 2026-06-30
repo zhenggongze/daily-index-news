@@ -15,6 +15,10 @@ on:
         description: '强制重新生成数据（覆盖今日已有数据）'
         type: boolean
         default: false
+      skip_daily_report:
+        description: '跳过"投资日报"推送（仅调试 daily-news 流水线时使用）'
+        type: boolean
+        default: false
 
 env:
   RUN_ID: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
@@ -140,3 +144,51 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REF: ${{ github.ref }}
           GITHUB_SHA: ${{ github.sha }}
+
+  # ============================================================
+  # 投资日报推送（独立 job，与 daily-news 并行，不依赖电脑开关机）
+  # 输出：Trae每日指数投资资讯 → PushDeer（含7大指数+28条宽基/行业新闻）
+  # 周末由 daily_report.py 内部 weekday()>=5 自动跳过
+  # ============================================================
+  daily-report-push:
+    if: ${{ ! inputs.skip_daily_report }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 安装 Python 依赖
+        run: pip install requests
+
+      - name: 恢复 news_history.json 缓存（跨日去重）
+        uses: actions/cache@v4
+        with:
+          path: news_history.json
+          key: news-history-${{ github.run_id }}
+          restore-keys: |
+            news-history-
+
+      - name: 生成并推送投资日报
+        run: |
+          echo "=== 开始运行 daily_report.py (CLOUD_MODE=1) ==="
+          python daily_report.py
+          rc=$?
+          echo "=== daily_report.py exit code: $rc ==="
+          if [ -f today_report.md ]; then
+            echo "=== today_report.md 预览（前30行）==="
+            head -30 today_report.md
+          fi
+          exit $rc
+        env:
+          DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
+          PUSHDEER_KEY: ${{ secrets.PUSHDEER_KEY }}
+          CLOUD_MODE: "1"

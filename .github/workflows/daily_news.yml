@@ -1,10 +1,8 @@
 name: AI算力产业链每日资讯
 
 on:
-  schedule:
-    # 北京时间 08:07 主触发 + 08:22 备用（避开整点高负载，GitHub schedule 整点易被跳过）
-    - cron: '7 0 * * *'
-    - cron: '22 0 * * *'
+  # ⚠️ 注意：cron-job.org 是唯一调度源（每天 08:07 POST 到 workflow_dispatch API）
+  # GitHub Actions schedule cron 因经常延迟数小时至十小时以上而废弃
   workflow_dispatch:
     inputs:
       skip_pipeline:

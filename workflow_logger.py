@@ -105,6 +105,22 @@ def push_notification(title, body, success):
     return False
 
 
+def fetch_today_news_count():
+    """从生产域名读取今日新闻数（幂等跳过时无法从步骤记录获取）"""
+    from datetime import date
+    try:
+        import requests as req
+        today = date.today().strftime("%Y-%m-%d")
+        url = f"https://portfolio-analysis.top/news/data/{today}.json"
+        resp = req.get(url, timeout=10, headers={"User-Agent": "python-workflow-logger"})
+        if resp.status_code != 200:
+            return "?"
+        data = resp.json()
+        return data.get("count", len(data.get("news", [])))
+    except Exception:
+        return "?"
+
+
 def cmd_finish():
     """--finish <run_id> 汇总并上报"""
     if len(sys.argv) < 3:
@@ -196,12 +212,19 @@ def cmd_finish():
             f"📋 详细日志: https://portfolio-analysis.top/news/logs/workflow_logs/{run_id}.json"
         )
     else:
-        news_count = "?"
-        for r in records:
-            if r.get("step") == "运行数据流水线" and r.get("status") == "success":
-                d = r.get("detail", "")
-                if "条" in d:
-                    news_count = d.split("共 ")[-1].split(" 条")[0] if "共 " in d else "?"
+        pipeline_record = any(r.get("step") == "运行数据流水线" for r in records)
+        if pipeline_record:
+            news_count = "?"
+            for r in records:
+                if r.get("step") == "运行数据流水线" and r.get("status") == "success":
+                    d = r.get("detail", "")
+                    if "条" in d:
+                        news_count = d.split("共 ")[-1].split(" 条")[0] if "共 " in d else "?"
+        else:
+            # 流水线被幂等检查跳过，从 OSS 实时读取新闻数
+            news_count = fetch_today_news_count()
+            print(f"\n  ℹ️ 流水线被幂等检查跳过（今日数据已存在），从OSS读取新闻数: {news_count}")
+
         body = (
             f"### ✅ AI算力每日资讯 - 执行成功\n\n"
             f"| 项目 | 值 |\n"
@@ -212,13 +235,11 @@ def cmd_finish():
             f"🌐 访问: https://portfolio-analysis.top/news/index.html"
         )
 
-    # 幂等：若数据流水线跳过重复生成（说明今天已由更早触发的运行推送过），本次不重复推送
-    pipeline_skipped = any(
-        r.get("step") == "运行数据流水线" and "跳过重复生成" in r.get("detail", "")
-        for r in records
-    )
-    if pipeline_skipped and final_status == "success":
-        print("\n  ℹ️ 今日数据已由更早触发的运行处理，跳过重复推送")
+    # 幂等跳过检测：流水线步骤完全不存在记录中 → 被 check_oss_today.py 跳过
+    # 此时不重复推送，避免同一份数据发多条通知
+    pipeline_absent = not any(r.get("step") == "运行数据流水线" for r in records)
+    if pipeline_absent and final_status == "success":
+        print("\n  ℹ️ 今日数据已存在（幂等检查跳过流水线），不重复推送通知")
     else:
         push_notification("AI算力每日资讯 工作流报告", body, final_status == "success")
 

@@ -15,10 +15,6 @@ on:
         description: '强制重新生成数据（覆盖今日已有数据）'
         type: boolean
         default: false
-      skip_push_digest:
-        description: '跳过 PushDeer 资讯摘要推送（仅调试流水线时使用）'
-        type: boolean
-        default: false
 
 env:
   RUN_ID: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
@@ -130,28 +126,6 @@ jobs:
         env:
           OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
           OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
-
-      - name: 推送今日资讯摘要到 PushDeer
-        if: ${{ ! inputs.skip_push_digest && success() }}
-        run: |
-          python workflow_logger.py --record "推送资讯摘要" "running"
-          output=$(python push_news_digest.py 2>&1)
-          rc=$?
-          echo "$output"
-          if [ $rc -ne 0 ]; then
-            python workflow_logger.py --record "推送资讯摘要" "failure" "$output"
-            exit $rc
-          fi
-          if echo "$output" | grep -q "PUSH_SUCCESS"; then
-            python workflow_logger.py --record "推送资讯摘要" "success"
-          elif echo "$output" | grep -q "跳过推送"; then
-            python workflow_logger.py --record "推送资讯摘要" "success" "无新闻或未配置Key，跳过"
-          else
-            python workflow_logger.py --record "推送资讯摘要" "failure" "推送失败"
-            exit 1
-          fi
-        env:
-          PUSHDEER_KEY: ${{ secrets.PUSHDEER_KEY }}
 
       - name: 汇总报告并发送通知
         if: always()

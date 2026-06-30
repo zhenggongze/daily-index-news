@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Date>2026-06-19T08:00:00</Date>
+    <Author>$(env:USERNAME)</Author>
+    <URI>\Trae每日指数投资资讯</URI>
+  </RegistrationInfo>
+  <Triggers>
+    <CalendarTrigger>
+      <StartBoundary>2026-06-19T08:00:00</StartBoundary>
+      <ScheduleByWeek>
+        <WeeksInterval>1</WeeksInterval>
+        <DaysOfWeek>
+          <Monday/><Tuesday/><Wednesday/><Thursday/><Friday/>
+        </DaysOfWeek>
+      </ScheduleByWeek>
+    </CalendarTrigger>
+    <BootTrigger>
+      <Delay>PT1M</Delay>
+    </BootTrigger>
+  </Triggers>
+  <Actions Context="Author">
+    <Exec>
+      <Command>D:\TRAE SOLO CN\投资指数资讯\run_daily_report.bat</Command>
+    </Exec>
+  </Actions>
+</Task>

@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 """
-每日指数投资资讯全自动流水线（云端版，可本地运行）
+GitHub Actions 每日资讯全自动流水线
 1. 获取7大指数行情（东方财富API）
 2. 拉取新浪财经200条头条
 3. 读取ETF持仓和历史记录
 4. 调用DeepSeek按prompt_update_v2.txt规则生成报告
 5. 质量自检 → 不通过则重试（最多3次）
 6. PushDeer推送
-
-云端运行：CLOUD_MODE=1（默认跳过本地 push_status.json 防重检查，由 GitHub Actions 调度保证单次触发）
-本地运行：不设 CLOUD_MODE（沿用 push_status.json 防重）
 """
 import os, sys, json, re, time, requests
 from datetime import datetime, date, timedelta
@@ -22,8 +19,6 @@ PUSHDEER_KEY = os.environ.get("PUSHDEER_KEY", "")
 PUSHDEER_URL = "https://api2.pushdeer.com/message/push"
 PUSH_TITLE = "Trae每日指数投资资讯"
 STATUS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "push_status.json")
-# 云端模式：跳过本地 push_status.json 依赖（云端无持久化文件，防重由调度保证）
-CLOUD_MODE = os.environ.get("CLOUD_MODE", "") == "1"
 
 # ========== 推送状态管理 ==========
 def is_today_pushed():
@@ -320,20 +315,6 @@ def push_report():
     print("PUSH_FAILED:max_retries_exceeded")
     return False
 
-def update_history(news_list):
-    """推送成功后把今日新闻标题写入 news_history.json 供明日去重"""
-    history = read_history()
-    today_str = date.today().isoformat()
-    history[today_str] = [n["title"] for n in news_list[:50]]
-    cutoff = (date.today() - timedelta(days=7)).isoformat()
-    history = {k: v for k, v in history.items() if k >= cutoff}
-    try:
-        with open("news_history.json", "w", encoding="utf-8") as f:
-            json.dump(history, f, ensure_ascii=False, indent=2)
-        print(f"  ✅ 已更新 news_history.json（今日{len(history[today_str])}条）")
-    except Exception as e:
-        print(f"  ⚠️ 更新 news_history.json 失败: {e}")
-
 # ========== 主流程 ==========
 def main():
     today = date.today()
@@ -341,13 +322,13 @@ def main():
         print(f"WEEKEND: {today.weekday()}, skipping")
         return
 
-    # 重复推送检查（仅本地模式需要；云端模式由调度保证单次触发）
-    if not CLOUD_MODE and is_today_pushed():
+    # 重复推送检查（登录时触发的补发场景）
+    if is_today_pushed():
         print("ALREADY_PUSHED_TODAY: 跳过")
         return
 
     print("=" * 40)
-    print(f"[{today.isoformat()}] 开始每日资讯流水线 (CLOUD_MODE={CLOUD_MODE})")
+    print(f"[{today.isoformat()}] 开始每日资讯流水线")
     print("=" * 40)
 
     # 1. 市场数据（非致命，失败则使用占位）
@@ -377,8 +358,6 @@ def main():
     system_prompt = read_system_prompt()
     etf_holdings = read_etf_holdings()
     history = read_history()
-    if not history:
-        print("  ℹ️ news_history.json 不存在或为空（首次运行/缓存失效），跳过去重")
 
     # 4. 生成报告
     for attempt in range(1, 4):
@@ -400,9 +379,7 @@ def main():
     # 5. 推送
     print("\n[5/5] 推送...")
     if push_report():
-        if not CLOUD_MODE:
-            record_push_success()
-        update_history(news)
+        record_push_success()
 
 if __name__ == "__main__":
     main()

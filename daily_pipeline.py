@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 """
-AI算力产业链每日资讯 全自动流水线 v2
-流程：RSS采集 → 多级过滤 → AI精选(DeepSeek打分) → 生成TSV → 写入网站JSON
-目标产出：20-30条/天，每日凌晨自动运行
-
-用法：
-  手动运行: python daily_pipeline.py
-  定时任务: Windows Task Scheduler 每天00:30触发
+AI算力产业链每日资讯 全自动流水线 v3
+流程：RSS采集 → 去重 → LLM批量分类(20-shot prompt) → 只对相关新闻逐条深度分析 → 写入JSON
+目标产出：10-25条/天高质量新闻，cron-job.org 每天 08:07 触发
 """
 import os, sys, re, json, time, warnings
 from datetime import datetime, date
@@ -44,65 +40,6 @@ RSS_SOURCES = [
     ("ServeTheHome", "https://www.servethehome.com/feed"),
 ]
 
-BLOCK_KWS = [
-    "ETF", "etf", "批量买入", "LPR", "利率", "央行",
-    "涨停", "跌停", "大涨", "暴涨", "涨超", "涨近",
-    "收盘", "尾盘", "早盘", "涨幅", "跌幅",
-    "酷派", "飞傲", "华擎", "红魔", "九州风神", "日产",
-    "票房", "世界杯", "足球",
-    "beta", "Beta", "visionOS", "visionos",
-    "智能手表", "出货量.*同比",
-    "AirPort", "MacBook", "Amazon Prime",
-    "IT早报", "早报｜",
-    "暂无", "不涉及",
-    "折叠屏", "折叠手机", "折叠面板",
-    "首销", "到手价", "起售", "开售",
-    "招聘", "岗位",
-    "央视", "人民日报",
-    "离任", "辞职", "退休",
-    "排行", "盘点",
-    "数据线", "充电器", "移动电源",
-    "耳机", "音箱", "手环",
-    "红米", "小米手机", "vivo", "OPPO手机",
-    "魅族", "努比亚",
-    "扫地机器人", "洗地机",
-    "空调", "冰箱", "洗衣机",
-    "键盘", "鼠标", "显示器",
-    "电动车", "新能源汽车",
-]
-
-BLOCK_DOMAINS = [
-    "特斯拉.*车祸", "特斯拉.*事故",
-    "电视出货", "智能手表",
-    "Steam.*Machine", "游戏主机",
-    "Model 3.*撞", "Model Y.*撞",
-    "AirPods", "AirTag",
-    "摩托罗拉", "酷派", "飞傲",
-    "组织架构.*调整", "人事.*变动",
-    "出货量.*同比",
-    "电视.*发布", "华硕.*笔记本", "戴尔.*笔记本", "惠普.*笔记本",
-]
-
-CORE_KWS = [
-    "AI", "人工智能", "算力", "大模型", "芯片", "半导体", "英伟达", "NVIDIA",
-    "光模块", "PCB", "HBM", "存储芯片", "存储原厂", "液冷", "散热", "CoWoS", "先进封装",
-    "国产替代", "自主可控", "华为", "数据中心", "GPU", "服务器",
-    "人形机器人", "具身智能", "Agent", "AI应用", "AI代理",
-    "Token", "Capex", "资本开支", "自动驾驶",
-    "六氟化钨", "铟", "氮化铝", "钨", "铋", "金刚石",
-    "鸿海", "富士康", "台积电", "OpenAI", "Anthropic", "智谱",
-    "字节跳动", "三星", "SK海力士", "美光", "谷歌", "DeepMind",
-    "推理", "端侧AI", "AI PC", "NPU",
-    "AI公司", "AI企业",
-    "半导体设备", "半导体材料",
-    "NAND", "长江存储", "DRAM", "DDR5",
-    "电力.*协议", "核能", "天然气.*发电",
-    "Codex", "微信.*AI", "豆包",
-    "晶圆", "代工", "制程", "封测",
-    "光刻机", "EUV", "刻蚀", "薄膜",
-    "LPU", "TPU", "ASIC", "FPGA",
-]
-
 ML_MAP = {
     "智谱": "D", "超硅": "A", "硅片": "A",
     "鸿海": "B", "英伟达": "B", "Rubin": "B", "Rubin": "B",
@@ -132,30 +69,6 @@ def get_mainline(title):
         if re.search(kw, title, re.I):
             return ml
     return "D"
-
-def should_block(title, summary):
-    text = (title + " " + summary)
-    for kw in BLOCK_KWS:
-        if kw.lower() in text.lower():
-            return True
-    for kw in BLOCK_DOMAINS:
-        if re.search(kw, text, re.I):
-            return True
-    eng_ratio = sum(1 for c in text[:200] if c.isascii() and c.isalpha()) / max(len(text[:200]), 1)
-    if eng_ratio > 0.6:
-        return True
-    if len(title) < 5 or len(title) > 100:
-        return True
-    return False
-
-def is_interesting(title, summary):
-    text = (title + " " + summary).lower()
-    # 关键词命中次数（大小写不敏感），要求≥2个不同关键词命中才放行
-    matched = set()
-    for kw in CORE_KWS:
-        if kw.lower() in text:
-            matched.add(kw)
-    return len(matched) >= 2
 
 def fetch_rss(url, name):
     entries = []
@@ -198,27 +111,221 @@ def gen_daily_summary(news_list):
         result[ml] = "；".join(parts) if parts else "——"
     return result
 
-def score_news_item(item):
-    score = 0
-    title = item["title"]
-    summary = item.get("summary", "")
-    text = title + " " + summary
-    source = item.get("source", "")
-    if source == "华尔街见闻": score += 5
-    elif source == "Tom's Hardware": score += 4
-    elif source == "IT之家": score += 2
-    elif source == "ServeTheHome": score += 4
-    digits = len(re.findall(r'\d+', text[:300]))
-    score += min(digits, 10)
-    if re.search(r'(?:突破|量产|出货|收入.*亿|市占率|超预期|创纪录)', text):
-        score += 5
-    if re.search(r'(?:调查|报告|数据.*显示|Counterpoint|Omdia|瑞银|高盛|花旗)', text):
-        score += 3
-    if re.search(r'(?:ETF|etf|涨[跌]停|大涨|暴涨)', text):
-        score -= 10
-    if source == "IT之家" and len(title) > 60:
-        score -= 3
-    return score
+CLASSIFY_PROMPT = """你是一个顶级AI算力/半导体产业链分析师。逐条判断以下新闻是否与 AI算力产业链投资 直接相关。
+
+每一条新闻必须输出一个JSON对象（字段见末尾），必须逐条对应，不要合并或跳过。
+
+==== 相关性判断标准 ====
+
+relevant=true（相关）— 以下任一情况：
+1. AI算力硬件本身：芯片/GPU/CPU/NPU/TPU/LPU/存储芯片/HBM/DRAM/NAND/DDR5/光模块/PCB/液冷/散热/服务器/CoWoS/先进封装/半导体设备/半导体材料/晶圆代工/制程/EUV/刻蚀/薄膜/数据中心
+2. AI模型或平台重大突破：大模型发布/推理性能重大提升/训练成本大幅下降/头部公司（OpenAI/Anthropic/Google/智谱/DeepSeek/字节豆包）发布能改变算力需求格局的产品
+3. AI产业链头部公司战略转向或重大投资：英伟达/台积电/SK海力士/美光/三星/鸿海/华为（AI方向）/字节（AI方向）/OpenAI—涉及AI算力的产线扩产/削减/并购/战略调整/资本开支
+4. 机构对AI板块的明确投资研判：券商/投行/基金对AI算力板块（芯片/光模块/存储/服务器/液冷）的研报或持仓分析
+5. AI电力/能源基础设施：数据中心用核能/天然气/电力协议——直接影响算力成本或供给
+6. AI对半导体上游原材料的需求信号：如六氟化钨/铟/氮化铝/金刚石等关键材料供需紧张
+
+relevant=false（不相关）— 以下任一情况：
+1. 消费电子：手机（含折叠屏）/平板/手表/耳机/音箱/手环/笔记本（除非内容明确讨论AI PC芯片）
+2. 汽车：自动驾驶车型交付/发布/价格调整（除非内容明确讨论自动驾驶芯片或AI训练）
+3. 人事/组织：公司聘用/离任/退休/组织架构调整/人事任命
+4. 慈善/捐款/公益/社会责任
+5. 媒体评论/喊话：如"央视评XX""人民日报XX"——无实质产业链信息
+6. 招聘：公司发布的招聘信息（即使是AI公司）
+7. 产品外观曝光/谍照/渲染图
+8. 操作系统/App更新（与AI硬件产业链无关）
+9. 纯消费级产品发布：如电视/空调/冰箱/扫地机器人/数据线
+10. 排行榜/盘点/汇总类文章
+11. 与半导体/AI产业链无关的公司行为
+12. 支付/银行卡/银联类新闻
+13. 无人机/相机等硬件（与AI芯片/算力无关）
+14. 纯科普/环境/碳足迹文章（无具体公司或数据）
+
+impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"无"）：
+- "大"：可能引发板块级行情或改变产业链竞争格局，影响量级达数亿元以上；或属于能显著改变产业链竞争格局、强化/削弱龙头地位的战略级信号
+- "中"：对特定环节/公司有实质性影响，量级千万~亿元
+- "小"：信息量有限，参考价值不大
+
+==== 示例（严谨参照）====
+
+示例1 — 相关(大)：
+标题：台积电宣布2nm工艺2026年Q1量产，产能已被苹果英伟达预订一空
+相关：true | 影响：大
+理由：先进制程重大突破，影响全球芯片供应格局
+
+示例2 — 相关(大)：
+标题：英伟达发布Rubin Ultra GPU，AI训练性能较上代提升4倍
+相关：true | 影响：大
+理由：旗舰GPU换代，重新定义算力格局
+
+示例3 — 相关(大)：
+标题：美商务部新增对华AI芯片出口管制清单，多家大厂受限
+相关：true | 影响：大
+理由：出口管制直接影响芯片供应链，板块级冲击
+
+示例4 — 相关(大)：
+标题：字节跳动调整组织架构：新设"算力基建部"直管AI算力采购
+相关：true | 影响：大
+理由：这是字节将AI算力作为公司核心基建的战略转向，区别于普通人事调整。涉及GPU/光模块/液冷的大规模采购预期
+说明：虽然标题含"组织架构"，但实质是算力战略布局，不是HR调整。需根据内容判断。
+
+示例5 — 相关(中)：
+标题：SK海力士清州工厂拟订购逾200台HBM4测试仪，总价最高可达4000亿韩元
+相关：true | 影响：中
+理由：HBM4设备采购影响存储产业链，量级可观
+
+示例6 — 相关(中)：
+标题：中际旭创预计Q3营收同比增长180%，800G光模块出货超预期
+相关：true | 影响：中
+理由：光模块龙头业绩超预期，验证AI算力需求传导
+
+示例7 — 相关(中)：
+标题：高盛：上调AI服务器板块目标价，2026年全球出货量预计增长40%
+相关：true | 影响：中
+理由：投行明确看多AI硬件板块，影响机构配置
+
+示例8 — 相关(小)：
+标题：三星1.4nm工艺或将于2029年重启量产
+相关：true | 影响：小
+理由：时间线太远（2029年），对近期投资无实质影响
+
+示例9 — 不相关：
+标题：Omdia：2026年Q1三星折叠面板份额降至27%
+相关：false | 影响：无
+理由：折叠面板是消费电子，与AI算力产业链无关
+
+示例10 — 不相关：
+标题：地平线创始人余凯：今年底会有累计20款"征程+HSD"车型交付
+相关：false | 影响：无
+理由：车企车型交付日常，不涉及AI芯片或算力产业链
+
+示例11 — 不相关：
+标题：央视评寒武纪市值破万亿：里程碑前，更需一份清醒定力
+相关：false | 影响：无
+理由：媒体评论喊话，无实质产业链信息
+
+示例12 — 不相关：
+标题：小米REDMI K90至尊版手机发布：骁龙8至尊版+主动散热风扇，首销到手价2799元起
+相关：false | 影响：无
+理由：手机发布，消费电子产品，与AI算力产业链无关
+
+示例13 — 不相关：
+标题：时隔四年，字节跳动调整组织架构：新设多个部门
+相关：false | 影响：无
+理由：纯组织架构调整/人事变动，不涉及AI算力产业链
+
+示例14 — 不相关：
+标题：英伟达在华启动机器人人才招聘，聚焦具身智能等四大方向
+相关：false | 影响：无
+理由：招聘信息，不是产业动态
+
+示例15 — 不相关：
+标题：美光科技宣布投入2.5亿美元，通过"特朗普账户"助力百万儿童储蓄
+相关：false | 影响：无
+理由：慈善行为，与存储芯片/算力产业链无关
+
+示例16 — 不相关：
+标题：深开鸿KaihongOS桌面版（x86）V5.0.2.30更新上线
+相关：false | 影响：无
+理由：操作系统版本更新，与AI算力硬件无关
+
+示例17 — 不相关：
+标题：大疆无人机DJI Fly鸿蒙版App正式上架华为应用市场
+相关：false | 影响：无
+理由：App上架，与AI芯片/算力产业链无关
+
+示例18 — 不相关：
+标题：银联推出AI智算卡：银行卡开始「外挂」大模型
+相关：false | 影响：无
+理由：银行卡产品，与AI算力产业链无关
+
+示例19 — 不相关：
+标题：刚刚，Codex首款硬件曝光
+相关：false | 影响：无
+理由：产品外观曝光/谍照，无实质配置或产业信息
+
+示例20 — 不相关：
+标题：AI能源使用的环境成本：碳足迹、水足迹与土地足迹
+相关：false | 影响：无
+理由：纯科普文章，无具体公司或产业链数据
+
+==== 待分类新闻列表 ====
+
+输出格式（JSON数组，每条对应一条输入新闻）：
+[
+  {"idx":0,"relevant":true,"impact":"大","reason":"简短理由≤15字"},
+  {"idx":1,"relevant":false,"impact":"无","reason":"简短理由≤15字"},
+  ...
+]
+
+输入新闻："""
+
+def llm_classify_batch(candidates):
+    if not candidates or not DEEPSEEK_KEY:
+        return []
+
+    lines = []
+    for i, item in enumerate(candidates):
+        t = item["title"]
+        s = item.get("summary", "")[:300]
+        lines.append(f"idx={i} | 标题：{t}\n摘要：{s}")
+
+    user_msg = CLASSIFY_PROMPT + "\n\n---\n\n".join(lines)
+    print(f"  LLM批量分类 {len(candidates)} 条（单次调用）...")
+
+    retry_delays = [2, 4]
+    for attempt in range(3):
+        try:
+            r = requests.post(DEEPSEEK_URL, json={
+                "model": DEEPSEEK_MODEL,
+                "messages": [{"role": "user", "content": user_msg}],
+                "temperature": 0.2,
+                "max_tokens": 8192,
+            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=180)
+
+            if r.status_code != 200:
+                if attempt < 2:
+                    time.sleep(retry_delays[attempt])
+                    continue
+                print(f"  分类HTTP {r.status_code}: {r.text[:100]}")
+                return []
+
+            content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+
+            json_str = content.strip()
+            if "```json" in json_str:
+                json_str = json_str.split("```json")[1].split("```")[0].strip()
+            elif "```" in json_str:
+                json_str = json_str.split("```")[1].split("```")[0].strip()
+            # 容错：找第一个[和最后一个]
+            bracket = json_str.find("[")
+            end = json_str.rfind("]")
+            if bracket >= 0 and end > bracket:
+                json_str = json_str[bracket:end+1]
+
+            results = json.loads(json_str)
+            if isinstance(results, list):
+                rel = sum(1 for r in results if r.get("relevant"))
+                print(f"  分类完成：相关 {rel} 条 / 总计 {len(results)} 条")
+                return results
+            if attempt < 2:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"  分类结果非数组")
+            return []
+        except json.JSONDecodeError:
+            if attempt < 2:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"  分类JSON解析失败")
+            return []
+        except Exception as e:
+            if attempt < 2:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"  分类异常: {e}")
+            return []
+    return []
 
 ANALYZE_PROMPT = """你是一个顶级的AI算力/半导体产业链分析师，分析直接辅助基金经理做买卖决策。
 
@@ -430,15 +537,6 @@ def apply_ai_analysis(news_items):
     print(f"  ✓ AI分析完成: {ok}/{total}条（{fixed}条补全）")
 
 
-def gen_impact_auto(title, summary):
-    text = (title + " " + summary).lower()
-    if re.search(r'(?:突破|颠覆|革命|首发|首款|首|量产|供应.*链|出口管制|制裁)', text):
-        return "大"
-    if re.search(r'(?:增长|下降|扩大|缩减|占比|份额|升级)', text):
-        return "中"
-    return "小"
-
-
 def quick_ai_summary(title, summary):
     clean = re.sub(r'<[^>]+>', '', summary)[:500]
     clean = re.sub(r'IT之家.*?日消息', '', clean)
@@ -554,15 +652,17 @@ def main():
         print(f"  {label}: {len(entries)}条")
     print(f"  原始采集: {len(all_raw)}条")
 
-    print("\n[2/5] 去重+过滤...")
-    # 跨日去重：从 OSS 加载最近 7 天已采集的 URL 和标题
+    print("\n[2/5] 去重...")
     seen_urls, seen_titles = load_recent_seen(days=7)
     cross_day_dup = 0
 
-    # 当日去重 + 跨日去重
     seen = set()
     deduped = []
     for e in all_raw:
+        t = e["title"]
+        s = e.get("summary", "")
+        raw = quick_ai_summary(t, s)
+        e["_raw"] = raw
         key = e["title"][:60].strip().lower()
         if key and key not in seen:
             seen.add(key)
@@ -570,59 +670,76 @@ def main():
                 cross_day_dup += 1
                 continue
             deduped.append(e)
-    filtered = [e for e in deduped if not should_block(e["title"], e.get("summary", "")) and is_interesting(e["title"], e.get("summary", ""))]
     print(f"  跨日重复剔除: {cross_day_dup} 条")
-    print(f"  当日去重: {len(deduped)} → 过滤: {len(filtered)}")
+    print(f"  去重后候选: {len(deduped)} 条")
 
-    print("\n[3/5] 打分+精选...")
-    scored = [(score_news_item(e), e) for e in filtered]
-    scored.sort(key=lambda x: x[0], reverse=True)
-    top = scored[:50]
-    print(f"  候选: {len(top)}条 → 目标: 20-30条/天")
+    print("\n[3/5] LLM批量分类（判断相关性+影响度）...")
+    classifications = llm_classify_batch(deduped)
 
-    print("\n[4/5] 生成分析...")
     news_list = []
-    for idx, (score, item) in enumerate(top):
-        t = item["title"]
-        s = item.get("summary", "")
-        raw = quick_ai_summary(t, s)
+    dropped = []
+    for cl in classifications:
+        idx = cl.get("idx", -1)
+        if idx < 0 or idx >= len(deduped):
+            continue
+        if not cl.get("relevant", False):
+            reason = cl.get("reason", "")
+            dropped.append(f"{deduped[idx]['title'][:30]}... ({reason})")
+            continue
+        item = deduped[idx]
         news_list.append({
-            "id": idx,
-            "title": t,
-            "summary": raw,
-            "_raw_summary": raw,
-            "mainline": get_mainline(t),
-            "impact": gen_impact_auto(t, s),
+            "id": len(news_list),
+            "title": item["title"],
+            "summary": item["_raw"],
+            "_raw_summary": item["_raw"],
+            "mainline": get_mainline(item["title"]),
+            "impact": cl.get("impact", "中"),
             "source": item.get("source", ""),
             "url": item.get("url", ""),
             "time": ""
         })
 
-    # AI深度分析（逐条独立调用DeepSeek，最大化分析质量）
-    apply_ai_analysis(news_list)
-
-    # ---- DeepSeek 二次质量过滤 ----
-    # 影响度为"小"且大白话结论<50字，说明DeepSeek认为这条新闻没有实质信息量，直接丢弃
-    before = len(news_list)
-    kept = []
-    dropped = []
-    for item in news_list:
-        impact = item.get("impact", "中")
-        if impact != "小":
-            kept.append(item)
-            continue
-        summary = item.get("summary", "")
-        m = re.search(r'【大白话结论】([^【]*)', summary)
-        conclusion = m.group(1).strip() if m else ""
-        if len(conclusion) >= 50:
-            kept.append(item)
-        else:
-            dropped.append(item["title"][:30])
-    news_list[:] = kept
     if dropped:
-        print(f"  🧹 DeepSeek二次过滤: 丢弃 {len(dropped)} 条低质量（小+结论短）→ 保留 {len(news_list)} 条")
-        for t in dropped:
+        print(f"  LLM过滤不相关: {len(dropped)} 条")
+        for t in dropped[:10]:
             print(f"    ✂️ {t}")
+        if len(dropped) > 10:
+            print(f"    ... 还有 {len(dropped)-10} 条")
+    print(f"  LLM判定相关: {len(news_list)} 条")
+
+    # 兜底：相关过少时从高分源补充
+    if len(news_list) < 8 and len(classifications) > 0:
+        print(f"  ⚠️ 相关不足8条，从高分源补充...")
+        for cl in classifications:
+            idx = cl.get("idx", -1)
+            if idx < 0 or idx >= len(deduped):
+                continue
+            if cl.get("relevant", False):
+                continue
+            item = deduped[idx]
+            if item.get("source") in ["华尔街见闻", "ServeTheHome", "Tom\'s Hardware"]:
+                news_list.append({
+                    "id": len(news_list),
+                    "title": item["title"],
+                    "summary": item["_raw"],
+                    "_raw_summary": item["_raw"],
+                    "mainline": get_mainline(item["title"]),
+                    "impact": "小",
+                    "source": item.get("source", ""),
+                    "url": item.get("url", ""),
+                    "time": ""
+                })
+                if len(news_list) >= 8:
+                    break
+        print(f"  补充后: {len(news_list)} 条")
+
+    print("\n[4/5] 逐条深度分析...")
+
+    if not news_list:
+        print("  ⚠️ 无相关新闻，跳过")
+        return 0
+
+    apply_ai_analysis(news_list)
 
     daily_summary = gen_daily_summary(news_list)
 

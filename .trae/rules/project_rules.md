@@ -43,50 +43,61 @@
 - **输出同步结果表格**：[路径] → [已更新/无需更新]
 - 未执行此步 = 违规
 
-### 🔴 强制检查点5：Windows Task Scheduler推送（本项目唯一推送方式）
-**所有推送由Windows任务计划程序管理，通过 `daily_report.py` → PushDeer完成。**
+### 🔴 强制检查点5：云端 GitHub Actions 统一推送（本项目唯一推送方式）
+**所有推送由云端 GitHub Actions 管理，推送内容是 daily_pipeline.py 生成、部署到 OSS 的 AI算力产业链新闻摘要。不依赖本地电脑开关机。**
 
 **推送链路：**
 | 调度方式 | 运行位置 | 生成方式 | 核心文件 |
 |---------|---------|---------|---------|
-| Windows Task Scheduler（双任务） | 你本机 | DeepSeek API 按 `prompt_update_v2.txt` 规则生成 | `daily_report.py` + `prompt_update_v2.txt` |
+| GitHub Actions cron + 跨仓库调度器 `daily-news-scheduler` | 云端 Ubuntu | daily_pipeline.py 采集RSS→DeepSeek分析→生成news JSON→push_news_digest.py 读取JSON按影响级别分组推送 | `push_news_digest.py` + `.github/workflows/daily_news.yml` |
 
-**双触发机制（解决重启/锁屏导致漏推）：**
-| 任务名 | 触发条件 | 用途 |
-|-------|---------|------|
-| `Trae每日指数投资资讯` | 工作日08:00 | 主触发 |
-| `Trae每日指数投资资讯-开机补发` | 电脑开机后1分钟 | 重启/锁屏后补发 |
+**单 Job 架构（daily-news job 内顺序执行）：**
+| 步骤 | 用途 | 推送标题 |
+|------|------|---------|
+| 运行数据流水线 | daily_pipeline.py 采集RSS+DeepSeek分析→生成 news_site/public/data/{today}.json | - |
+| 构建前端+部署OSS | 部署到 portfolio-analysis.top/news/index.html | - |
+| 推送今日资讯摘要 | push_news_digest.py 读取今日JSON，按影响大/中分组推送 | "AI算力产业链每日资讯" |
+| 汇总报告并发送通知 | workflow_logger.py 推送工作流执行状态 | "AI算力每日资讯 工作流报告" |
 
-**防重复机制（在 `daily_report.py` 中内置）：**
-- `is_today_pushed()` → 读取 `push_status.json`，检查今天是否已推送
-- `record_push_success()` → 推送成功后写入 `push_status.json`
-- 开机补发任务运行时，如果当天已8:00推送过，自动跳过
+**跨仓库调度器（解决 GitHub Actions schedule 对删除重建 workflow 不重新注册的问题）：**
+- 私有仓库 `daily-news-scheduler` 的 `scheduler.yml` 在北京 08:05 调用 workflow_dispatch API
+- PAT_TOKEN 作为 encrypted secret 注入
 
-**相关文件：**
-- `run_daily_report.bat` — bat入口
-- `daily_report.py` — 生成+推送主脚本（含防重检查+成功记录）
-- `push_status.json` — 推送状态记录（自动维护）
-- `task_daily_report.xml` — 任务XML备份（日触发+开机触发）
-- `setup_admin.bat` — 以管理员运行注册两个任务
-- `logs/task_runner.log` — 运行日志
+**防重复机制（云端版）：**
+- 防重由 GitHub Actions 调度天然保证（每天固定时间触发一次）
+- `news_history.json` 跨日去重由 daily_pipeline.py 内部 load_recent_seen() 处理（从 OSS 读取最近7天数据）
+- 周末 cron 仍触发，但新闻数据可能为空，push_news_digest.py 检测到 count==0 自动跳过推送
 
-**安装方法（仅首次，需管理员权限）：**
+**相关文件（云端，已纳入 git）：**
+- `push_news_digest.py` — 读取今日 news JSON，按影响级别分组推送到 PushDeer
+- `daily_pipeline.py` — RSS采集+DeepSeek分析，生成 news JSON
+- `.github/workflows/daily_news.yml` — workflow 定义（daily-news job 含采集→部署→推送摘要→汇总报告）
+- `workflow_logger.py` — 工作流日志+状态推送
+
+**已废弃文件（2026-06-30 彻底推倒重做时删除/弃用）：**
+- ~~`run_daily_report.bat`~~ — 已删除
+- ~~`setup_admin.bat`~~ — 已删除
+- ~~`task_daily_report.xml`~~ — 已删除
+- ~~`push_status.json`~~ — 云端不再使用
+- ~~`logs/task_runner.log`~~ — 云端不再使用
+- `daily_report.py` — 旧的投资日报脚本（新浪财经+28条宽基行业），**已不再被 workflow 调用**，仅保留本地调试用
+
+**手动触发命令（调试用）：**
+```powershell
+# 通过 GitHub API 触发 workflow_dispatch（需 GITHUB_TOKEN 环境变量）
+python -c "import json, urllib.request, os; token=os.environ.get('GITHUB_TOKEN',''); data=json.dumps({'ref':'main','inputs':{'skip_pipeline':False,'skip_push_digest':False,'force_refresh':False}}).encode(); req=urllib.request.Request('https://api.github.com/repos/zhenggongze/daily-index-news/actions/workflows/daily_news.yml/dispatches', data=data, headers={'Accept':'application/vnd.github+json','Authorization':f'Bearer {token}','User-Agent':'python'}, method='POST'); urllib.request.urlopen(req, timeout=15); print('✅ triggered')"
+
+# 查看最近运行状态
+python _check_actions_v2.py
 ```
-# 右键 → 以管理员身份运行
-D:\TRAE SOLO CN\投资指数资讯\setup_admin.bat
-```
 
-**管理命令：**
-```
-# 卸载
-schtasks /delete /tn "Trae每日指数投资资讯" /f
-schtasks /delete /tn "Trae每日指数投资资讯-开机补发" /f
+**本地运行 push_news_digest.py（调试用，需设 PUSHDEER_KEY 才真推送）：**
+```powershell
+# 仅生成 today_digest.md 不推送（不设 PUSHDEER_KEY）
+$env:PUSHDEER_KEY=""; python push_news_digest.py --date 2026-06-24
 
-# 手动立即运行（测试用）
-Start-ScheduledTask -TaskName "Trae每日指数投资资讯"
-
-# 查看日志
-Get-Content "D:\TRAE SOLO CN\投资指数资讯\logs\task_runner.log"
+# 真推送（设 PUSHDEER_KEY）
+python push_news_digest.py
 ```
 
 ### 🔴 强制检查点7：工作流失败自动检测（本轮新增，每轮对话开始时强制执行）

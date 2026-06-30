@@ -17,6 +17,7 @@ news_history.json.bak
 # 报告输出
 reports/
 today_report.md
+today_digest.md
 website/
 
 # 系统文件
@@ -71,6 +72,7 @@ push_*.ps1
 push_*.js
 push_*.py
 !push_with_python.py
+!push_news_digest.py
 send_*.ps1
 send_*.js
 send_*.py

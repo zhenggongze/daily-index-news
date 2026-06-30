@@ -55,6 +55,20 @@ BLOCK_KWS = [
     "AirPort", "MacBook", "Amazon Prime",
     "IT早报", "早报｜",
     "暂无", "不涉及",
+    "折叠屏", "折叠手机", "折叠面板",
+    "首销", "到手价", "起售", "开售",
+    "招聘", "岗位",
+    "央视", "人民日报",
+    "离任", "辞职", "退休",
+    "排行", "盘点",
+    "数据线", "充电器", "移动电源",
+    "耳机", "音箱", "手环",
+    "红米", "小米手机", "vivo", "OPPO手机",
+    "魅族", "努比亚",
+    "扫地机器人", "洗地机",
+    "空调", "冰箱", "洗衣机",
+    "键盘", "鼠标", "显示器",
+    "电动车", "新能源汽车",
 ]
 
 BLOCK_DOMAINS = [
@@ -64,6 +78,9 @@ BLOCK_DOMAINS = [
     "Model 3.*撞", "Model Y.*撞",
     "AirPods", "AirTag",
     "摩托罗拉", "酷派", "飞傲",
+    "组织架构.*调整", "人事.*变动",
+    "出货量.*同比",
+    "电视.*发布", "华硕.*笔记本", "戴尔.*笔记本", "惠普.*笔记本",
 ]
 
 CORE_KWS = [
@@ -81,6 +98,9 @@ CORE_KWS = [
     "NAND", "长江存储", "DRAM", "DDR5",
     "电力.*协议", "核能", "天然气.*发电",
     "Codex", "微信.*AI", "豆包",
+    "晶圆", "代工", "制程", "封测",
+    "光刻机", "EUV", "刻蚀", "薄膜",
+    "LPU", "TPU", "ASIC", "FPGA",
 ]
 
 ML_MAP = {
@@ -130,8 +150,12 @@ def should_block(title, summary):
 
 def is_interesting(title, summary):
     text = (title + " " + summary).lower()
-    hit = sum(1 for kw in CORE_KWS if kw.lower() in text)
-    return hit >= 1
+    # 关键词命中次数（大小写不敏感），要求≥2个不同关键词命中才放行
+    matched = set()
+    for kw in CORE_KWS:
+        if kw.lower() in text:
+            matched.add(kw)
+    return len(matched) >= 2
 
 def fetch_rss(url, name):
     entries = []
@@ -576,6 +600,29 @@ def main():
 
     # AI深度分析（逐条独立调用DeepSeek，最大化分析质量）
     apply_ai_analysis(news_list)
+
+    # ---- DeepSeek 二次质量过滤 ----
+    # 影响度为"小"且大白话结论<50字，说明DeepSeek认为这条新闻没有实质信息量，直接丢弃
+    before = len(news_list)
+    kept = []
+    dropped = []
+    for item in news_list:
+        impact = item.get("impact", "中")
+        if impact != "小":
+            kept.append(item)
+            continue
+        summary = item.get("summary", "")
+        m = re.search(r'【大白话结论】([^【]*)', summary)
+        conclusion = m.group(1).strip() if m else ""
+        if len(conclusion) >= 50:
+            kept.append(item)
+        else:
+            dropped.append(item["title"][:30])
+    news_list[:] = kept
+    if dropped:
+        print(f"  🧹 DeepSeek二次过滤: 丢弃 {len(dropped)} 条低质量（小+结论短）→ 保留 {len(news_list)} 条")
+        for t in dropped:
+            print(f"    ✂️ {t}")
 
     daily_summary = gen_daily_summary(news_list)
 

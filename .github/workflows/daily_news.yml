@@ -41,8 +41,17 @@ jobs:
           pip install feedparser requests urllib3 oss2
           python workflow_logger.py --record "安装依赖" "success"
 
+      - name: 幂等检查（今天OSS已有数据则跳过流水线）
+        id: id_check
+        if: ${{ ! inputs.skip_pipeline && ! inputs.force_refresh }}
+        continue-on-error: true
+        run: python check_oss_today.py
+        env:
+          OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
+          OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
+
       - name: 运行数据流水线
-        if: ${{ ! inputs.skip_pipeline }}
+        if: ${{ ! inputs.skip_pipeline && (inputs.force_refresh || steps.id_check.outcome != 'success') }}
         run: |
           python workflow_logger.py --record "运行数据流水线" "running"
           output=$(python daily_pipeline.py 2>&1)

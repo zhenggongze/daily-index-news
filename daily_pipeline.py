@@ -285,6 +285,72 @@ impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"�
 理由：产品外观曝光/谍照，无实质配置或产业信息
 说明：只有外观图、渲染图、谍照，没有参数/价格/量产信息的"曝光"类新闻一律不相关。
 
+示例27 — 不相关（关键：项目规模太小，对投资无实质价值）：
+标题：华为官宣全球首个商用多模态文旅大模型规模化应用，覆盖超400万用户，衍生品销售超200万元
+相关：false | 影响：无
+理由：项目规模太小(营收仅200万)，可忽略
+说明：即使名称含"AI大模型"、"昇腾"、"规模化应用"，如果营收/订单规模在千万以下，对A股公司业绩可忽略，判不相关。
+
+示例28 — 不相关（关键：仅有标题无具体数据）：
+标题：2026年Q1全球外部企业存储系统厂商收入市场份额（附原数据表）
+相关：false | 影响：无
+理由：仅有标题，无任何份额变动数据，无法判断影响
+说明：此类新闻只有标题和"发布了报告"的表述，不提供任何具体数字或变化趋势。即使涉及存储/芯片相关，没有数据就无从判断，一律判不相关。
+
+示例29 — 不相关（关键：司法调查/抓人/传唤）：
+标题：Taiwan raids Supermicro and two supply-chain partners in widening Nvidia smuggling probe — nine sites hit as six people summoned for questioning
+相关：false | 影响：无
+理由：司法调查/传唤/抓人，不属于产业链供需客观事件
+说明：司法调查、海关缉私、传唤问话等执法事件，即使涉及芯片公司，也不构成产业链供需层面的客观变化。结果不确定、时间不确定，无法用于投资决策。判不相关。
+
+示例30 — 不相关（关键：盗窃/治安/犯罪案件）：
+标题：Cargo thieves target AI data center supplies in $1.3 million heists — $300,000 worth of copper wire and $1 million worth of equipment recovered outside Chicago
+相关：false | 影响：无
+理由：盗窃/治安/犯罪案件，与产业链供需无关
+说明：盗窃案、纵火案、交通事故等社会治安事件，即使发生在AI数据中心或芯片公司附近，也属于治安范畴，不对产业链供需产生可持续影响。判不相关。
+
+示例31 — 不相关（关键：远期路线图/画大饼，超10年无法用于投资决策）：
+标题：Imec's 2026 roadmap details 0.3nm nodes by 2038, CFET transistors become viable at 0.7nm
+相关：false | 影响：无
+理由：2038年目标太远，与当前投资决策无关
+说明：技术路线图目标年份在5年以上（尤其是10年以上）的，不论涉及多么先进的技术，均无法在当前投资决策中使用。判不相关。
+
+示例32 — 不相关（关键：社会共识/公开已知信息，无新增投资价值）：
+标题：对比鲜明！美股创"六年来最佳一季"，黄金经历"十多年来最差一季"
+相关：false | 影响：无
+理由：社会共识/公开已知信息，无新增投资决策价值
+说明：市场已经反复讨论过的显性趋势（如"AI涨了很多""美股大涨""存储很火"等），属于人人皆知的共识，无法帮助投资者做出差异化决策。判不相关。
+
+示例33 — 不相关（关键：市场已充分定价的公开信息）：
+标题：AI热潮引爆亚洲科技股，新兴市场股市单季大涨23%，创17年来最佳表现
+相关：false | 影响：无
+理由：已发生的市场行情，无法用于未来投资决策
+说明：已经反映在股价里的"事后行情"新闻，投资者知道这些信息对做出买卖决策没有任何增量帮助。判不相关。
+
+示例34 — 不相关（关键：公司自身风险提示/常规公告，非高管减持/业绩变脸）：
+标题：寒武纪万亿市值夜的"冷水"：上游涨价挤压利润，高估值面临业绩兑现大考
+相关：false | 影响：无
+理由：公司主动风险提示公告，无实质产业链变化
+说明：公司的常规风险提示公告、媒体评论文章，不涉及高管减持、业绩预警、订单丢失等实质利空，仅属合规性披露或媒体评论。判不相关。
+
+示例35 — 不相关（关键：基金经理/分析师主观喊话/观点类，无新增数据）：
+标题：近一年收益220%，汇丰晋信陈平：AI算力中最看好光模块，大光=新光>小光
+相关：false | 影响：无
+理由：基金经理/分析人士主观观点，无新增产业链数据
+说明：各类主观观点、投资建议、展望分析，不包含新增的订单/产量/营收等产业链客观数据，对投资决策无增量价值。判不相关。
+
+示例36 — 不相关（关键：机构警告/喊话，无具体数据支撑）：
+标题：AI最大风险不是泡沫，而是"借钱狂奔"！IMF发出警告
+相关：false | 影响：无
+理由：机构主观警告，无具体数据支撑
+说明：机构/投行/IMF等发布的风险警告、前景展望类报告，如果不包含具体数量级数据，仅属观点表达，无法用于量化投资决策。判不相关。
+
+示例37 — 不相关（关键：非A股市场大盘行情，与该产业链投资无关）：
+标题：欧股Q2劲涨10%创2020年来最佳季表现，AI热情与油价回落成推手
+相关：false | 影响：无
+理由：非A股市场行情，与国内AI产业链投资无直接关联
+说明：欧洲/美股的大盘指数涨跌、全球宏观行情，即使提到"AI"，也与A股AI算力产业链的个股投资决策无直接关联。判不相关。
+
 ==== 待分类新闻列表 ====
 
 输出格式（JSON数组，每条对应一条输入新闻）：
@@ -382,6 +448,14 @@ ANALYZE_PROMPT = """你是一个顶级的AI算力/半导体产业链分析师，
   战略级信号（如关键技术创新、颠覆性产品发布、头部公司重大转向）
 - "中"=对特定环节/公司有实质性影响，影响量级达千万~亿元，能对公司季度营收产生可辨识变化，但不会扩散到全板块
 - "小"=信息量有限，参考价值不大；或虽有相关标的，但影响量级在千万以下、相对公司体量可忽略
+
+关键原则（必须遵守）：
+1. 社会共识/公开已知信息 → 一律判"小"：如"AI涨了很多""美股芯片大涨""存储很火"等市场已反复讨论且股价已反映的信息，属于人人皆知的共识，归为"小"甚至应判不相关。
+2. 基金经理/分析师主观观点（无新增数据） → 一律判"小"：个人观点、喊话、展望，不包含订单/产量/营收等客观产业链数据。
+3. 机构警告/喊话（无具体数据支撑） → 一律判"小"：IMF/投行等风险警告，不包含具体数字的均判"小"。
+4. 公司自身风险提示/常规公告 → 一律判"小"：非高管减持/业绩预警/订单丢失的常规披露，判"小"。
+5. 新材料替代且有A股直接供应关系 → 优先判"大"或"中"：如电子级氢氟酸供货台积电、多氟多等直接受益，订单量级可达数亿元，应判"大"。
+6. 已发生在海外的行情（非A股） → 一律判"小"：欧洲/美股大盘涨跌、全球宏观行情，即使提到AI，与A股投资决策无直接关联。
 
 判断影响力度前，优先估算该事件对相关A股公司营收/利润的影响量级。
 若无法量化具体营收，则判断该事件是否属于能改变产业链竞争格局的战略级信号。
@@ -482,10 +556,12 @@ def apply_ai_analysis(news_items):
     print(f"  逐条AI分析中（共{total}条，每条约需3-5秒）...")
 
     ok = 0
+    failed_items = []
     for i, item in enumerate(news_items):
         result = deepseek_analyze_one(item, i + 1)
         if result is None:
             print(f"  [{i+1}/{total}] ❌ 失败")
+            failed_items.append(item)
             continue
 
         impact = result.get("impact", "中")
@@ -569,6 +645,9 @@ def apply_ai_analysis(news_items):
 
     if fixed:
         print(f"  ⚠️ 硬编码补全: 补了 {fixed} 条的缺失模块")
+
+    for item in failed_items:
+        item["_deepseek_fully_failed"] = True
 
     print(f"  ✓ AI分析完成: {ok}/{total}条（{fixed}条补全）")
 
@@ -658,6 +737,89 @@ def update_website_index():
                     print(f"  ✅ 已从 OSS 补回缺失的数据: {ds}.json")
             except Exception:
                 pass
+
+TITLE_REWRITE_PROMPT = """你是一个中文新闻标题编辑。将以下新闻标题处理成适合AI算力产业链投资者阅读的中文标题。
+
+规则：
+1. 完整日早报/晚报/早餐FM类标题 → 提取其中与AI算力产业链直接相关的核心事件作为新标题，不保留"IT早报""早餐FM"前缀
+2. 纯英文标题 → 翻译为简洁中文
+3. 标题中若包含多个子事件（用分隔符隔开） → 只保留与AI算力/半导体/芯片直接相关的事件
+4. 处理后的标题长度不超过40个中文字符
+5. 保持客观，不加主观评价
+
+输出格式（JSON数组，与输入一一对应）：
+[
+  {"idx":0,"title":"处理后标题"},
+  {"idx":1,"title":"处理后标题"},
+  ...
+]
+
+输入新闻："""
+
+def rewrite_titles(news_list):
+    if not news_list or not DEEPSEEK_KEY:
+        return
+    # 只处理需要改写的标题：含"IT早报""早餐FM""FM-Radio"的，或含英文的
+    need_rewrite_idx = []
+    for i, item in enumerate(news_list):
+        t = item["title"]
+        if any(kw in t for kw in ["IT早报", "早餐", "FM-Radio", "FM |"]):
+            need_rewrite_idx.append(i)
+        elif re.search(r'[A-Za-z]{4,}', t):
+            # 含较长的英文
+            eng_ratio = sum(1 for c in t[:80] if c.isascii() and c.isalpha()) / max(len(t[:80]), 1)
+            if eng_ratio > 0.3:
+                need_rewrite_idx.append(i)
+    if not need_rewrite_idx:
+        return
+
+    print(f"  改写 {len(need_rewrite_idx)} 条标题...")
+    lines = [f"idx={i} | 原始标题：{news_list[i]['title']}" for i in need_rewrite_idx]
+    user_msg = TITLE_REWRITE_PROMPT + "\n\n---\n\n".join(lines)
+
+    for attempt in range(3):
+        try:
+            r = requests.post(DEEPSEEK_URL, json={
+                "model": DEEPSEEK_MODEL,
+                "messages": [{"role": "user", "content": user_msg}],
+                "temperature": 0.2,
+                "max_tokens": 4096,
+            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=120)
+
+            if r.status_code != 200:
+                if attempt < 2:
+                    time.sleep(2)
+                    continue
+                return
+
+            content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+            json_str = content.strip()
+            if "```json" in json_str:
+                json_str = json_str.split("```json")[1].split("```")[0].strip()
+            elif "```" in json_str:
+                json_str = json_str.split("```")[1].split("```")[0].strip()
+            bracket = json_str.find("[")
+            end = json_str.rfind("]")
+            if bracket >= 0 and end > bracket:
+                json_str = json_str[bracket:end+1]
+
+            results = json.loads(json_str)
+            if isinstance(results, list):
+                for result in results:
+                    idx = result.get("idx", -1)
+                    new_title = result.get("title", "")
+                    if idx >= 0 and idx < len(need_rewrite_idx) and new_title:
+                        orig_idx = need_rewrite_idx[idx]
+                        old_title = news_list[orig_idx]["title"]
+                        if old_title != new_title:
+                            news_list[orig_idx]["title"] = new_title
+                            print(f"    {old_title[:30]}... → {new_title}")
+                return
+        except Exception:
+            if attempt < 2:
+                time.sleep(2)
+                continue
+            return
 
 def main():
     today_str = date.today().strftime("%Y-%m-%d")
@@ -776,6 +938,15 @@ def main():
         return 0
 
     apply_ai_analysis(news_list)
+
+    # 移除DeepSeek分析完全失败的条目（如内容过长导致JSON解析失败）
+    before = len(news_list)
+    news_list = [n for n in news_list if not n.get("_deepseek_fully_failed", False)]
+    if len(news_list) < before:
+        print(f"  🗑️ 移除 {before - len(news_list)} 条分析失败项")
+
+    # 改写标题：IT早报/早餐FM提取核心事件 + 英文标题翻译中文
+    rewrite_titles(news_list)
 
     daily_summary = gen_daily_summary(news_list)
 

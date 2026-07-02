@@ -33,9 +33,15 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 RSS_SOURCES = [
     ("华尔街见闻", "https://feed.wallstreetcn.com/news/global"),
-    ("IT之家", "https://www.ithome.com/feed/"),
-    ("爱范儿", "https://www.ifanr.com/feed"),
-    ("199IT", "https://www.199it.com/feed"),
+    ("36氪8点1氪", "https://36kr.com/feed"),
+    ("量子位", "https://www.qbitai.com/feed"),
+    ("雷锋网", "https://www.leiphone.com/feed"),
+    ("InfoQ", "https://www.infoq.cn/feed"),
+    ("钛媒体", "https://www.tmtpost.com/rss.xml"),
+    ("IEEE Spectrum", "https://spectrum.ieee.org/feeds/type/news.rss"),
+    ("SemiconductorEngineering", "https://semiengineering.com/feed"),
+    ("SemiWiki", "https://semiwiki.com/feed"),
+    ("Phoronix", "https://www.phoronix.com/rss.php"),
     ("Tom's Hardware", "https://www.tomshardware.com/feeds/all"),
     ("ServeTheHome", "https://www.servethehome.com/feed"),
 ]

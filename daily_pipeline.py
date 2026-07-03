@@ -173,142 +173,86 @@ impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"�
 标题：字节跳动新设"算力基建部"直管AI算力采购
 相关：true | 影响：大
 理由：字节算力战略转向，涉及GPU/光模块大规模采购
-说明：明确提到算力部门/AI基础设施投资时才判相关。
 
 示例5 — 相关(大)：
-标题：美光：2026年Q3营收414.6亿增345%，HBM卖疯
-相关：true | 影响：大
-理由：HBM业绩暴增验证AI存储需求爆发
-
-示例6 — 相关(大)：
 标题：当台积电三星SK海力士都在抢货，电子级氢氟酸成为AI芯片制造不可替代的"化学钥匙"
 相关：true | 影响：大
-理由：新材料替代+A股直接供应商(多氟多供货台积电)，订单量级数亿元
+理由：新材料替代+A股直接供应商，订单量级数亿元
 
-示例7 — 相关(大)：
-标题：韩国三星SK海力士宣布5200亿美元投资计划扩产HBM
-相关：true | 影响：大
-理由：HBM产能大规模扩建，直接利好供应链
-
-示例8 — 相关(中)：
+示例6 — 相关(中)：
 标题：SK海力士清州工厂订购逾200台HBM4测试仪，总价4000亿韩元
 相关：true | 影响：中
 理由：HBM4设备采购量级可观
 
-示例9 — 相关(中)：
+示例7 — 相关(中)：
 标题：中际旭创预计Q3营收同比增长180%，800G光模块出货超预期
 相关：true | 影响：中
 理由：光模块龙头业绩超预期
 
-示例10 — 相关(小)：
+示例8 — 相关(小)：
 标题：三星1.4nm工艺或将于2029年重启量产
 相关：true | 影响：小
 理由：时间线太远(2029年)，无实质影响
 
-示例11 — 不相关：
+示例9 — 不相关：
 标题：Omdia：2026年Q1三星折叠面板份额降至27%
 相关：false
 理由：折叠面板是消费电子
 
-示例12 — 不相关：
+示例10 — 不相关：
 标题：小米REDMI K90至尊版手机发布：骁龙8至尊版+主动散热风扇，首销到手价2799元起
 相关：false
 理由：手机发布，消费电子
 
-示例13 — 不相关：
+示例11 — 不相关：
 标题：央视评寒武纪市值破万亿：更需一份清醒定力
 相关：false
 理由：媒体评论喊话，无产业链信息
 
-示例14 — 不相关：
+示例12 — 不相关：
 标题：美光科技宣布投入2.5亿美元助力百万儿童储蓄
 相关：false
 理由：慈善行为，非产业动态
 
-示例15 — 不相关：
+示例13 — 不相关：
 标题：深开鸿KaihongOS桌面版V5.0.2.30更新上线
 相关：false
 理由：操作系统小版本更新
 
-示例16 — 不相关：
+示例14 — 不相关：
 标题：大疆无人机DJI Fly鸿蒙版App正式上架华为应用市场
 相关：false
-理由：无人机App上架
+理由：无人机App上架，与算力无关
 
-示例17 — 不相关：
+示例15 — 不相关：
 标题：银联推出AI智算卡：银行卡开始「外挂」大模型
 相关：false
 理由：银行卡金融产品，与算力无关
 
-示例18 — 不相关：
-标题：OpenAI修复Codex额度消耗异常故障并重置用户额度
-相关：false
-理由：Bug修复/运维事件
-
-示例19 — 不相关：
-标题：刚刚，Codex首款硬件曝光
-相关：false
-理由：外观曝光/谍照，无实质配置
-
-示例20 — 不相关：
+示例16 — 不相关：
 标题：AI能源使用的环境成本：碳足迹、水足迹与土地足迹
 相关：false
 理由：科普文章，无具体公司或数据
 
-示例21 — 不相关：
+示例17 — 不相关：
 标题：华为官宣全球首个商用多模态文旅大模型规模化应用，衍生品销售200万元
 相关：false
 理由：项目规模太小(营收仅200万)，可忽略
 
-示例22 — 不相关：
-标题：2026年Q1全球外部企业存储系统厂商收入市场份额
-相关：false
-理由：仅有标题无具体份额变动数据
-
-示例23 — 不相关：
-标题：Taiwan raids Supermicro and two supply-chain partners in Nvidia smuggling probe
-相关：false
-理由：司法调查/传唤，不属于产业链供需
-
-示例24 — 不相关：
-标题：Cargo thieves target AI data center supplies in $1.3M heists
-相关：false
-理由：盗窃案件，与产业链供需无关
-
-示例25 — 不相关：
-标题：Imec's 2026 roadmap: 0.3nm nodes by 2038
-相关：false
-理由：2038年太远，无法用于投资决策
-
-示例26 — 不相关：
+示例18 — 不相关：
 标题：对比鲜明！美股创"六年来最佳一季"，黄金经历"十多年来最差一季"
 相关：false
 理由：社会共识/公开已知信息，无增量投资价值
 
-示例27 — 不相关：
-标题：AI热潮引爆亚洲科技股，新兴市场单季大涨23%
-相关：false
-理由：已发生的市场行情，无法用于未来决策
-
-示例28 — 不相关：
+示例19 — 不相关：
 标题：寒武纪万亿市值夜的"冷水"：上游涨价挤压利润
 相关：false
 理由：公司自身风险提示公告，非实质变化
 
-示例29 — 不相关：
+示例20 — 不相关：
 标题：近一年收益220%，汇丰晋信陈平：AI算力中最看好光模块
 相关：false
 理由：基金经理主观观点，无新增数据
-
-示例30 — 不相关：
-标题：AI最大风险不是泡沫，而是"借钱狂奔"！IMF警告
-相关：false
-理由：机构主观警告，无具体数据
-
-示例31 — 不相关：
-标题：欧股Q2劲涨10%创2020年来最佳季表现
-相关：false
-理由：非A股市场行情，与国内AI投资无直接关联
 
 ==== 待分类新闻列表 ====
 
@@ -325,68 +269,84 @@ def llm_classify_batch(candidates):
     if not candidates or not DEEPSEEK_KEY:
         return []
 
-    lines = []
-    for i, item in enumerate(candidates):
-        t = item["title"]
-        s = item.get("summary", "")[:300]
-        lines.append(f"idx={i} | 标题：{t}\n摘要：{s}")
+    CHUNK_SIZE = 50
+    all_results = []
+    total = len(candidates)
 
-    user_msg = CLASSIFY_PROMPT + "\n\n---\n\n".join(lines)
-    print(f"  LLM批量分类 {len(candidates)} 条（单次调用）...")
+    for chunk_start in range(0, total, CHUNK_SIZE):
+        chunk = candidates[chunk_start:chunk_start + CHUNK_SIZE]
+        lines = []
+        for i, item in enumerate(chunk):
+            global_idx = chunk_start + i
+            t = item["title"]
+            s = item.get("summary", "")[:200]
+            lines.append(f"idx={global_idx} | 标题：{t}\n摘要：{s}")
 
-    retry_delays = [2, 4]
-    for attempt in range(3):
-        try:
-            r = requests.post(DEEPSEEK_URL, json={
-                "model": DEEPSEEK_MODEL,
-                "messages": [{"role": "user", "content": user_msg}],
-                "temperature": 0.2,
-                "max_tokens": 8192,
-            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=180)
+        user_msg = CLASSIFY_PROMPT + "\n\n---\n\n".join(lines)
+        progress = f"{chunk_start + 1}-{min(chunk_start + len(chunk), total)}/{total}"
+        print(f"  LLM批量分类 {progress}（{len(chunk)}条）...")
 
-            if r.status_code != 200:
+        chunk_ok = False
+        retry_delays = [2, 4]
+        for attempt in range(3):
+            try:
+                r = requests.post(DEEPSEEK_URL, json={
+                    "model": DEEPSEEK_MODEL,
+                    "messages": [{"role": "user", "content": user_msg}],
+                    "temperature": 0.2,
+                    "max_tokens": 8192,
+                }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=180)
+
+                if r.status_code != 200:
+                    if attempt < 2:
+                        time.sleep(retry_delays[attempt])
+                        continue
+                    print(f"    ⚠️ HTTP {r.status_code}: {r.text[:100]}")
+                    break
+
+                content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                json_str = content.strip()
+                if "```json" in json_str:
+                    json_str = json_str.split("```json")[1].split("```")[0].strip()
+                elif "```" in json_str:
+                    json_str = json_str.split("```")[1].split("```")[0].strip()
+                bracket = json_str.find("[")
+                end = json_str.rfind("]")
+                if bracket >= 0 and end > bracket:
+                    json_str = json_str[bracket:end+1]
+
+                results = json.loads(json_str)
+                if isinstance(results, list):
+                    rel = sum(1 for r in results if r.get("relevant"))
+                    all_results.extend(results)
+                    print(f"    ✅ 相关 {rel}/{len(results)}")
+                    chunk_ok = True
+                    break
                 if attempt < 2:
                     time.sleep(retry_delays[attempt])
                     continue
-                print(f"  分类HTTP {r.status_code}: {r.text[:100]}")
-                return []
+                print(f"    ⚠️ 分类结果非数组")
+                break
+            except json.JSONDecodeError:
+                if attempt < 2:
+                    time.sleep(retry_delays[attempt])
+                    continue
+                print(f"    ⚠️ JSON解析失败")
+                break
+            except Exception as e:
+                if attempt < 2:
+                    time.sleep(retry_delays[attempt])
+                    continue
+                print(f"    ⚠️ 调用失败: {e}")
+                break
 
-            content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+        if not chunk_ok:
+            for i in range(len(chunk)):
+                all_results.append({"idx": chunk_start + i, "relevant": False, "impact": "无", "reason": "分类超时"})
 
-            json_str = content.strip()
-            if "```json" in json_str:
-                json_str = json_str.split("```json")[1].split("```")[0].strip()
-            elif "```" in json_str:
-                json_str = json_str.split("```")[1].split("```")[0].strip()
-            # 容错：找第一个[和最后一个]
-            bracket = json_str.find("[")
-            end = json_str.rfind("]")
-            if bracket >= 0 and end > bracket:
-                json_str = json_str[bracket:end+1]
-
-            results = json.loads(json_str)
-            if isinstance(results, list):
-                rel = sum(1 for r in results if r.get("relevant"))
-                print(f"  分类完成：相关 {rel} 条 / 总计 {len(results)} 条")
-                return results
-            if attempt < 2:
-                time.sleep(retry_delays[attempt])
-                continue
-            print(f"  分类结果非数组")
-            return []
-        except json.JSONDecodeError:
-            if attempt < 2:
-                time.sleep(retry_delays[attempt])
-                continue
-            print(f"  分类JSON解析失败")
-            return []
-        except Exception as e:
-            if attempt < 2:
-                time.sleep(retry_delays[attempt])
-                continue
-            print(f"  分类异常: {e}")
-            return []
-    return []
+    rel_count = sum(1 for r in all_results if r.get("relevant"))
+    print(f"  分类完成：相关 {rel_count} 条 / 总计 {len(all_results)} 条")
+    return all_results
 
 ANALYZE_PROMPT = """你是一个顶级的AI算力/半导体产业链分析师，分析直接辅助基金经理做买卖决策。
 

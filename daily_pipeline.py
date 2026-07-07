@@ -1,3 +1,8 @@
+raise SystemExit("[DISABLED] 该项目已按用户要求禁用所有自动化")
+"""
+[DISABLED] 该项目已按用户要求禁用所有自动化
+"""
+
 #!/usr/bin/env python3
 """
 AI算力产业链每日资讯 全自动流水线 v3

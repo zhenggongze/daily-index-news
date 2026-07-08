@@ -1,4 +1,3 @@
-raise SystemExit("[DISABLED] 该项目已按用户要求禁用所有自动化")
 #!/usr/bin/env python3
 """Push today_report.md via PushDeer. Used by TRAE Schedule instead of Node.js."""
 import sys, json, requests, os

@@ -1,8 +1,3 @@
-raise SystemExit("[DISABLED] 该项目已按用户要求禁用所有自动化")
-"""
-[DISABLED] 该项目已按用户要求禁用所有自动化
-"""
-
 #!/usr/bin/env python3
 """
 GitHub Actions 每日资讯全自动流水线

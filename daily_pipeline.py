@@ -79,17 +79,21 @@ def get_mainline(title):
 def fetch_rss(url, name):
     entries = []
     try:
-        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=15, verify=False)
+        resp = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30, verify=False)
         if resp.status_code != 200:
+            print(f"    {name}: HTTP {resp.status_code}")
             return []
         feed = feedparser.parse(resp.text)
+        count = len(feed.entries)
         for entry in feed.entries[:30]:
             title = (entry.get("title") or "").strip()
             summary = re.sub(r'<[^>]+>', '', entry.get("summary", entry.get("description", ""))).strip()
             if title:
                 entries.append({"title": title, "summary": summary[:400], "source": name, "url": entry.get("link", "")})
-    except:
-        pass
+        status = f"✅ {count}条" if count > 0 else f"⚠️ 0条 (可能非RSS或解析失败)"
+        print(f"    {name}: {status}")
+    except Exception as e:
+        print(f"    {name}: ❌ {type(e).__name__}: {str(e)[:80]}")
     return entries
 
 def extract_conclusion(summary):

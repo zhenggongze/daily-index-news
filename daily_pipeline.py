@@ -152,9 +152,9 @@ relevant=false（不相关）— 以下任一情况：
 14. 纯科普/环境/碳足迹文章（无具体公司或数据）
 
 impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"无"）：
-- "大"：可能引发板块级行情或改变产业链竞争格局，影响量级达数亿元以上；或属于能显著改变产业链竞争格局、强化/削弱龙头地位的战略级信号
-- "中"：对特定环节/公司有实质性影响，量级千万~亿元
-- "小"：信息量有限，参考价值不大
+- "大"：可能引发板块级行情或改变产业链竞争格局。单笔融资/订单≥100亿美元，或国家级政策/出口管制，或颠覆性技术发布
+- "中"：对特定环节/公司有实质性影响。融资/订单10~100亿美元，或龙头业绩超预期，或重要技术路线切换
+- "小"：信息量有限。融资<10亿美元，或单一产品发布，或远期路线图，或主观观点
 
 ==== 示例（严谨参照）====
 
@@ -257,6 +257,11 @@ impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"�
 标题：近一年收益220%，汇丰晋信陈平：AI算力中最看好光模块
 相关：false
 理由：基金经理主观观点，无新增数据
+
+示例21 — 相关(中)：
+标题：MiniMax融资19亿美元加码算力
+相关：true | 影响：中
+理由：19亿美元在10~100亿区间，推动算力采购但非板块级
 
 ==== 待分类新闻列表 ====
 
@@ -366,22 +371,18 @@ ANALYZE_PROMPT = """你是一个顶级的AI算力/半导体产业链分析师，
 用像真人聊天的大白话直接说出结论，让普通投资者一听就懂"这事儿跟我有什么关系"。不要加任何开场标签或总结词。
 
 影响力度判断标准：
-- "大"=可能引发板块级行情或改变产业链竞争格局，影响量级达数亿元以上；
-  或虽无法量化具体营收，但属于能显著改变产业链竞争格局、强化/削弱龙头地位的
-  战略级信号（如关键技术创新、颠覆性产品发布、头部公司重大转向）
-- "中"=对特定环节/公司有实质性影响，影响量级达千万~亿元，能对公司季度营收产生可辨识变化，但不会扩散到全板块
-- "小"=信息量有限，参考价值不大；或虽有相关标的，但影响量级在千万以下、相对公司体量可忽略
+- "大"=可能引发板块级行情或改变产业链竞争格局。单笔融资/订单≥100亿美元，或国家级政策/出口管制，或颠覆性技术发布
+- "中"=对特定环节/公司有实质性影响。融资/订单10~100亿美元，或龙头业绩超预期，或重要技术路线切换
+- "小"=信息量有限。融资<10亿美元，或单一产品发布，或远期路线图，或主观观点
 
 关键原则（必须遵守）：
-1. 社会共识/公开已知信息 → 一律判"小"：如"AI涨了很多""美股芯片大涨""存储很火"等市场已反复讨论且股价已反映的信息，属于人人皆知的共识，归为"小"甚至应判不相关。
-2. 基金经理/分析师主观观点（无新增数据） → 一律判"小"：个人观点、喊话、展望，不包含订单/产量/营收等客观产业链数据。
-3. 机构警告/喊话（无具体数据支撑） → 一律判"小"：IMF/投行等风险警告，不包含具体数字的均判"小"。
-4. 公司自身风险提示/常规公告 → 一律判"小"：非高管减持/业绩预警/订单丢失的常规披露，判"小"。
-5. 新材料替代且有A股直接供应关系 → 优先判"大"或"中"：如电子级氢氟酸供货台积电、多氟多等直接受益，订单量级可达数亿元，应判"大"。
-6. 已发生在海外的行情（非A股） → 一律判"小"：欧洲/美股大盘涨跌、全球宏观行情，即使提到AI，与A股投资决策无直接关联。
-
-判断影响力度前，优先估算该事件对相关A股公司营收/利润的影响量级。
-若无法量化具体营收，则判断该事件是否属于能改变产业链竞争格局的战略级信号。
+1. 社会共识/公开已知信息 → "小"或直接排除
+2. 基金经理/分析师主观观点（无新增数据） → "小"
+3. 机构警告/喊话（无具体数据支撑） → "小"
+4. 公司自身风险提示/常规公告 → "小"
+5. 新材料替代且有A股直接供应关系 → "大"或"中"
+6. 已发生在海外的行情（非A股） → "小"
+7. 单笔融资/订单在10~100亿美元区间 → "中"而非"大"，如MiniMax 19亿美元、Positron 7.5亿美元均判"中"
 
 严格按以下JSON格式输出，不要在JSON外添加任何其他文字：
 {
@@ -664,11 +665,12 @@ def update_website_index():
 TITLE_REWRITE_PROMPT = """你是一个中文新闻标题编辑。将以下新闻标题处理成适合AI算力产业链投资者阅读的中文标题。
 
 规则：
-1. 完整日早报/晚报/早餐FM类标题 → 提取其中与AI算力产业链直接相关的核心事件作为新标题，不保留"IT早报""早餐FM"前缀
-2. 纯英文标题 → 翻译为简洁中文
-3. 标题中若包含多个子事件（用分隔符隔开） → 只保留与AI算力/半导体/芯片直接相关的事件
-4. 处理后的标题长度不超过40个中文字符
-5. 保持客观，不加主观评价
+1. 纯英文标题 → 翻译为简洁中文
+2. 标题中若包含多个子事件（用分隔符隔开） → 只保留与AI算力/半导体/芯片直接相关的事件
+3. 处理后的标题长度不超过40个中文字符
+4. 保持客观，不加主观评价
+
+注意：早报/早餐/8点1氪等汇总类标题已在本地预处理提取了核心事件，不需要再处理。
 
 输出格式（JSON数组，与输入一一对应）：
 [
@@ -679,69 +681,116 @@ TITLE_REWRITE_PROMPT = """你是一个中文新闻标题编辑。将以下新闻
 
 输入新闻："""
 
+def extract_first_event_from_summary(item):
+    summary = item.get("summary", "")
+    text = re.sub(r'<[^>]+>', '', summary).strip()
+    if not text or len(text) < 10:
+        return ""
+    parts = re.split(r'[；;｜|]\s*(?=\d+[\.\、\s]+)', text[:800], maxsplit=5)
+    for part in parts:
+        part = re.sub(r'^\d+[\.\、\s]+', '', part).strip()
+        if len(part) >= 10:
+            return part[:60]
+    return text[:60]
+
 def rewrite_titles(news_list):
     if not news_list or not DEEPSEEK_KEY:
         return
-    # 只处理需要改写的标题：含"IT早报""早餐FM""FM-Radio"的，或含较多英文的
-    need_rewrite_idx = []
+
+    # 阶段0：本地预处理壳标题（早报/早餐/8点1氪等汇总类）
+    SHELL_KWS = ["IT早报", "早报", "早餐", "FM-Radio", "FM |", "晚报", "日报", "Edge AI Daily", "8点1氪"]
     for i, item in enumerate(news_list):
         t = item["title"]
-        if any(kw in t for kw in ["IT早报", "早餐", "FM-Radio", "FM |"]):
-            need_rewrite_idx.append(i)
-        elif re.search(r'[A-Za-z]{3,}', t):
-            eng_ratio = sum(1 for c in t[:100] if c.isascii() and c.isalpha()) / max(len(t[:100]), 1)
-            if eng_ratio > 0.15:
-                need_rewrite_idx.append(i)
+        if any(kw in t for kw in SHELL_KWS):
+            chinese_chars = sum(1 for c in t if '\u4e00' <= c <= '\u9fff')
+            if chinese_chars < 15:
+                extracted = extract_first_event_from_summary(item)
+                if extracted:
+                    old = item["title"]
+                    news_list[i]["title"] = extracted
+                    print(f"    本地提取: {old[:25]} → {extracted}")
+                else:
+                    news_list[i]["_is_empty_shell"] = True
+                    print(f"    🗑️ 空壳标题丢弃: {t[:40]}")
+
+    # 收集需要DeepSeek改写的标题（英文标题）
+    need_rewrite_idx = [i for i, item in enumerate(news_list)
+        if not item.get("_is_empty_shell") and re.search(r'[A-Za-z]{3,}', item["title"])
+        and sum(1 for c in item["title"][:100] if c.isascii() and c.isalpha()) / max(len(item["title"][:100]), 1) > 0.15]
+
     if not need_rewrite_idx:
         return
 
-    print(f"  改写 {len(need_rewrite_idx)} 条标题...")
-    lines = [f"idx={i} | 原始标题：{news_list[i]['title']}" for i in need_rewrite_idx]
-    user_msg = TITLE_REWRITE_PROMPT + "\n\n---\n\n".join(lines)
+    CHUNK_SIZE = 15
+    total = len(need_rewrite_idx)
+    rewritten = 0
+    failed = 0
 
-    for attempt in range(3):
-        try:
-            r = requests.post(DEEPSEEK_URL, json={
-                "model": DEEPSEEK_MODEL,
-                "messages": [{"role": "user", "content": user_msg}],
-                "temperature": 0.2,
-                "max_tokens": 4096,
-            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=120)
+    for chunk_start in range(0, total, CHUNK_SIZE):
+        chunk_indices = need_rewrite_idx[chunk_start:chunk_start + CHUNK_SIZE]
+        lines = []
+        for local_idx, orig_idx in enumerate(chunk_indices):
+            lines.append(f"idx={local_idx} | 原始标题：{news_list[orig_idx]['title']}")
+        user_msg = TITLE_REWRITE_PROMPT + "\n\n---\n\n".join(lines)
+        progress = f"{chunk_start + 1}-{min(chunk_start + len(chunk_indices), total)}/{total}"
 
-            if r.status_code != 200:
+        chunk_ok = False
+        for attempt in range(3):
+            try:
+                r = requests.post(DEEPSEEK_URL, json={
+                    "model": DEEPSEEK_MODEL,
+                    "messages": [{"role": "user", "content": user_msg}],
+                    "temperature": 0.2,
+                    "max_tokens": 4096,
+                }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=120)
+
+                if r.status_code != 200:
+                    if attempt < 2:
+                        time.sleep(2)
+                        continue
+                    break
+
+                content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                json_str = content.strip()
+                if "```json" in json_str:
+                    json_str = json_str.split("```json")[1].split("```")[0].strip()
+                elif "```" in json_str:
+                    json_str = json_str.split("```")[1].split("```")[0].strip()
+                bracket = json_str.find("[")
+                end = json_str.rfind("]")
+                if bracket >= 0 and end > bracket:
+                    json_str = json_str[bracket:end+1]
+
+                results = json.loads(json_str)
+                if isinstance(results, list):
+                    for result in results:
+                        local_idx = result.get("idx", -1)
+                        new_title = result.get("title", "")
+                        if 0 <= local_idx < len(chunk_indices) and new_title:
+                            orig_idx = chunk_indices[local_idx]
+                            old_title = news_list[orig_idx]["title"]
+                            if old_title != new_title:
+                                news_list[orig_idx]["title"] = new_title
+                                rewritten += 1
+                    chunk_ok = True
+                    print(f"    改写 {progress} ✅ {len(chunk_indices)}条")
+                    break
                 if attempt < 2:
                     time.sleep(2)
                     continue
-                return
+                break
+            except Exception:
+                if attempt < 2:
+                    time.sleep(2)
+                    continue
+                break
 
-            content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
-            json_str = content.strip()
-            if "```json" in json_str:
-                json_str = json_str.split("```json")[1].split("```")[0].strip()
-            elif "```" in json_str:
-                json_str = json_str.split("```")[1].split("```")[0].strip()
-            bracket = json_str.find("[")
-            end = json_str.rfind("]")
-            if bracket >= 0 and end > bracket:
-                json_str = json_str[bracket:end+1]
+        if not chunk_ok:
+            failed += len(chunk_indices)
+            print(f"    改写 {progress} ⚠️ 失败")
 
-            results = json.loads(json_str)
-            if isinstance(results, list):
-                for result in results:
-                    idx = result.get("idx", -1)
-                    new_title = result.get("title", "")
-                    if idx >= 0 and idx < len(need_rewrite_idx) and new_title:
-                        orig_idx = need_rewrite_idx[idx]
-                        old_title = news_list[orig_idx]["title"]
-                        if old_title != new_title:
-                            news_list[orig_idx]["title"] = new_title
-                            print(f"    {old_title[:30]}... → {new_title}")
-                return
-        except Exception:
-            if attempt < 2:
-                time.sleep(2)
-                continue
-            return
+    if rewritten > 0 or failed > 0:
+        print(f"  改写完成: {rewritten} 条成功" + (f", {failed} 条失败" if failed else ""))
 
 def main():
     today_str = date.today().strftime("%Y-%m-%d")
@@ -872,14 +921,20 @@ def main():
 
     apply_ai_analysis(news_list)
 
-    # 移除DeepSeek分析完全失败的条目（如内容过长导致JSON解析失败）
+    # 移除DeepSeek分析完全失败的条目
     before = len(news_list)
     news_list = [n for n in news_list if not n.get("_deepseek_fully_failed", False)]
     if len(news_list) < before:
         print(f"  🗑️ 移除 {before - len(news_list)} 条分析失败项")
 
-    # 改写标题：IT早报/早餐FM提取核心事件 + 英文标题翻译中文
+    # 改写标题：早报壳标题本地提取 + 英文标题DeepSeek翻译
     rewrite_titles(news_list)
+
+    # 移除空壳标题条目（早报/早餐类无内容）
+    before = len(news_list)
+    news_list = [n for n in news_list if not n.get("_is_empty_shell", False)]
+    if len(news_list) < before:
+        print(f"  🗑️ 移除 {before - len(news_list)} 条空壳标题")
 
     daily_summary = gen_daily_summary(news_list)
 

@@ -1,7 +1,7 @@
 import type { NewsItem, MainlineFilter, ImpactFilter } from '../types/news';
 
 // 故事线标签作为主线扩展选项（用 story_tags 字段过滤）
-const STORY_AS_MAINLINE = ['扩产', '涨价', '降价', '技术', '业绩', '需求', '供给'];
+const STORY_AS_MAINLINE = ['扩产'];
 
 export function filterByMainline(news: NewsItem[], filter: MainlineFilter): NewsItem[] {
   if (filter.length === 0) return news;

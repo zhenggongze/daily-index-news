@@ -12,11 +12,7 @@ const mlOptions: { key: string; label: string; color?: string }[] = [
   { key: 'B', label: 'B英伟达链' },
   { key: 'C', label: 'C具身智能' },
   { key: 'D', label: 'D大厂应用' },
-  { key: '扩产', label: '扩产', color: '#4caf50' },
-  { key: '涨价', label: '涨价', color: '#e94560' },
-  { key: '降价', label: '降价', color: '#ff9800' },
-  { key: '技术', label: '技术', color: '#2196f3' },
-  { key: '业绩', label: '业绩', color: '#009688' },
+  { key: '扩产', label: 'E扩产', color: '#4caf50' },
 ];
 
 const impOptions: { key: string; label: string; cls: string }[] = [

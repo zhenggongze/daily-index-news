@@ -15,6 +15,20 @@ const impactCls: Record<string, string> = {
 const impactColors: Record<string, string> = {
   '大': '#e94560', '中': '#ff9800', '小': '#bdbdbd',
 };
+// 故事线标签颜色映射
+const storyTagColors: Record<string, string> = {
+  '扩产': '#4caf50',
+  '涨价': '#e94560',
+  '降价': '#ff9800',
+  '技术': '#2196f3',
+  '国产替代': '#9c27b0',
+  '政策': '#b71c1c',
+  '业绩': '#009688',
+  '并购': '#e91e63',
+  '需求': '#03a9f4',
+  '供给': '#fdd835',
+  '风险': '#757575',
+};
 
 export default function NewsCard({ news }: NewsCardProps) {
   const [expanded] = useState(true);
@@ -32,6 +46,9 @@ export default function NewsCard({ news }: NewsCardProps) {
         <span className="tag-impact" style={{ background: impColor }}>{news.impact || '小'}</span>
         {mlParts.map(ml => (
           <span key={ml} className="tag-mainline">{mlLabels[ml] || ml}</span>
+        ))}
+        {(news.story_tags || []).map(tag => (
+          <span key={tag} className="tag-story" style={{ background: storyTagColors[tag] || '#757575' }}>{tag}</span>
         ))}
       </div>
 

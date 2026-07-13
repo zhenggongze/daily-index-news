@@ -1,10 +1,12 @@
-import type { MainlineFilter, ImpactFilter } from '../types/news';
+import type { MainlineFilter, ImpactFilter, StoryTagFilter } from '../types/news';
 
 interface FilterBarProps {
   mlFilter: MainlineFilter;
   impFilter: ImpactFilter;
+  storyFilter: StoryTagFilter;
   onMlChange: (f: MainlineFilter) => void;
   onImpChange: (f: ImpactFilter) => void;
+  onStoryChange: (f: StoryTagFilter) => void;
 }
 
 const mlOptions: { key: string; label: string }[] = [
@@ -20,6 +22,21 @@ const impOptions: { key: string; label: string; cls: string }[] = [
   { key: 'low', label: '影响小', cls: 'impact-l' },
 ];
 
+// 故事线标签配置：标签名 -> 颜色
+const storyOptions: { key: string; color: string }[] = [
+  { key: '扩产', color: '#4caf50' },
+  { key: '涨价', color: '#e94560' },
+  { key: '降价', color: '#ff9800' },
+  { key: '技术', color: '#2196f3' },
+  { key: '国产替代', color: '#9c27b0' },
+  { key: '政策', color: '#b71c1c' },
+  { key: '业绩', color: '#009688' },
+  { key: '并购', color: '#e91e63' },
+  { key: '需求', color: '#03a9f4' },
+  { key: '供给', color: '#fdd835' },
+  { key: '风险', color: '#757575' },
+];
+
 function toggleItem(list: string[], key: string): string[] {
   if (list.includes(key)) {
     return list.filter(x => x !== key);
@@ -27,7 +44,7 @@ function toggleItem(list: string[], key: string): string[] {
   return [...list, key];
 }
 
-export default function FilterBar({ mlFilter, impFilter, onMlChange, onImpChange }: FilterBarProps) {
+export default function FilterBar({ mlFilter, impFilter, storyFilter, onMlChange, onImpChange, onStoryChange }: FilterBarProps) {
   return (
     <div className="filter-bar">
       <div className="filter-row">
@@ -61,6 +78,26 @@ export default function FilterBar({ mlFilter, impFilter, onMlChange, onImpChange
             {t.label}
           </button>
         ))}
+      </div>
+      <div className="filter-row filter-row-story">
+        <span className="filter-label">故事线：</span>
+        <button
+          className={`filter-tab story-tab-all ${storyFilter.length === 0 ? 'active' : ''}`}
+          onClick={() => onStoryChange([])}
+        >全部</button>
+        {storyOptions.map(t => {
+          const active = storyFilter.includes(t.key);
+          return (
+            <button
+              key={t.key}
+              className={`filter-tab story-tab ${active ? 'active' : ''}`}
+              style={active ? { background: t.color, borderColor: t.color, color: '#fff' } : { borderColor: t.color, color: t.color }}
+              onClick={() => onStoryChange(toggleItem(storyFilter, t.key))}
+            >
+              {t.key}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

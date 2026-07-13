@@ -7,6 +7,7 @@ export interface NewsItem {
   source: string;
   time: string;
   url?: string;
+  story_tags?: string[];
 }
 
 export interface BreakthroughItem {
@@ -32,4 +33,5 @@ export interface DateIndex {
 
 export type MainlineFilter = string[];
 export type ImpactFilter = string[];
+export type StoryTagFilter = string[];
 export type ViewMode = 'daily' | 'breakthrough';

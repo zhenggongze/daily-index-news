@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { NewsItem, DayData, DateIndex, MainlineFilter, ImpactFilter, StoryTagFilter } from './types/news';
+import type { NewsItem, DayData, DateIndex, MainlineFilter, ImpactFilter } from './types/news';
 import { fmtDateCN, parseDate } from './utils/date';
-import { filterByMainline, filterByImpact, filterByStoryTag } from './utils/filter';
+import { filterByMainline, filterByImpact } from './utils/filter';
 import Header from './components/Header';
 import DateNav from './components/DateNav';
 import StatsBar from './components/StatsBar';
@@ -17,7 +17,6 @@ export default function App() {
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [mlFilter, setMlFilter] = useState<MainlineFilter>([]);
   const [impFilter, setImpFilter] = useState<ImpactFilter>(['high', 'mid']);
-  const [storyFilter, setStoryFilter] = useState<StoryTagFilter>([]);
 
   useEffect(() => {
     fetch(`${BASE}data/index.json?t=${Date.now()}`)
@@ -62,12 +61,12 @@ export default function App() {
     }
   }, [availableDates, loadDate]);
 
+  // 过滤链：主线 -> 影响
   const filteredNews = useMemo(() => {
     let result = filterByMainline(allNews, mlFilter);
     result = filterByImpact(result, impFilter);
-    result = filterByStoryTag(result, storyFilter);
     return result;
-  }, [allNews, mlFilter, impFilter, storyFilter]);
+  }, [allNews, mlFilter, impFilter]);
 
   const stats = useMemo(() => {
     const high = allNews.filter(n => (n.impact || '').includes('大')).length;
@@ -101,10 +100,8 @@ export default function App() {
         <FilterBar
           mlFilter={mlFilter}
           impFilter={impFilter}
-          storyFilter={storyFilter}
           onMlChange={setMlFilter}
           onImpChange={setImpFilter}
-          onStoryChange={setStoryFilter}
         />
 
         {loading ? (

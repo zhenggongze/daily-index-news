@@ -33,5 +33,4 @@ export interface DateIndex {
 
 export type MainlineFilter = string[];
 export type ImpactFilter = string[];
-export type StoryTagFilter = string[];
 export type ViewMode = 'daily' | 'breakthrough';

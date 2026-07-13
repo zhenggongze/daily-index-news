@@ -868,20 +868,20 @@ def main():
     print(f"[AI算力每日资讯] {today_str}")
     print("=" * 50)
 
-    # 幂等检查：先查 OSS 远端是否有今天数据，有则跳过（即使 FORCE_REFRESH=1 也跳过，避免重复推送）
-    today_url = f"https://portfolio-analysis.top/news/data/{today_str}.json"
-    try:
-        resp = requests.get(today_url, timeout=10, verify=False)
-        if resp.status_code == 200:
-            d = resp.json()
-            if d.get("count", 0) > 0:
-                print(f"✅ OSS 已有今日数据({d['count']}条)，跳过重复生成")
-                return d["count"]
-    except Exception:
-        pass  # OSS 无数据，正常生成
-
-    # 再尝试本地文件
+    # 幂等检查：FORCE_REFRESH=1 时强制重新生成，跳过所有幂等检查
     if os.environ.get("FORCE_REFRESH") != "1":
+        today_url = f"https://portfolio-analysis.top/news/data/{today_str}.json"
+        try:
+            resp = requests.get(today_url, timeout=10, verify=False)
+            if resp.status_code == 200:
+                d = resp.json()
+                if d.get("count", 0) > 0:
+                    print(f"✅ OSS 已有今日数据({d['count']}条)，跳过重复生成")
+                    return d["count"]
+        except Exception:
+            pass  # OSS 无数据，正常生成
+
+        # 再尝试本地文件
         today_file = os.path.join(DATA_DIR, f"{today_str}.json")
         if os.path.exists(today_file):
             try:

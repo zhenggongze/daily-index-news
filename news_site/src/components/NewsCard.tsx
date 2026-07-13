@@ -9,6 +9,10 @@ interface NewsCardProps {
 const mlLabels: Record<string, string> = {
   A: 'A国产替代', B: 'B英伟达链', C: 'C具身智能', D: 'D大厂应用',
 };
+// story_tags 中识别为"扩产"主线时，追加 E扩产 标签（与 A/B/C/D 视觉统一）
+const STORY_MAINLINE_MAP: Record<string, string> = {
+  '扩产': 'E扩产',
+};
 const impactCls: Record<string, string> = {
   '大': 'impact-high', '中': 'impact-mid', '小': 'impact-low',
 };
@@ -20,6 +24,11 @@ export default function NewsCard({ news }: NewsCardProps) {
   const [expanded] = useState(true);
   const { mainSummary, analysis, conclusion } = parseSummary(news.summary);
   const mlParts = news.mainline ? news.mainline.split(/[,，]/).map(s => s.trim()).filter(Boolean) : [];
+  // story_tags 中匹配的主线扩展标签（如扩产→E扩产）
+  const storyMlParts = (news.story_tags || [])
+    .map(t => STORY_MAINLINE_MAP[t])
+    .filter((v, i, arr): v is string => !!v && arr.indexOf(v) === i);
+  const allMlParts = [...mlParts, ...storyMlParts];
   const impCls = impactCls[news.impact] || 'impact-low';
   const impColor = impactColors[news.impact] || '#bdbdbd';
 
@@ -30,7 +39,7 @@ export default function NewsCard({ news }: NewsCardProps) {
     <div className={`news-card ${impCls}`}>
       <div className="news-tags-row" style={{ borderLeftColor: impColor }}>
         <span className="tag-impact" style={{ background: impColor }}>{news.impact || '小'}</span>
-        {mlParts.map(ml => (
+        {allMlParts.map(ml => (
           <span key={ml} className="tag-mainline">{mlLabels[ml] || ml}</span>
         ))}
       </div>

@@ -7,12 +7,12 @@ interface FilterBarProps {
   onImpChange: (f: ImpactFilter) => void;
 }
 
-const mlOptions: { key: string; label: string; color?: string }[] = [
+const mlOptions: { key: string; label: string }[] = [
   { key: 'A', label: 'A国产替代' },
   { key: 'B', label: 'B英伟达链' },
   { key: 'C', label: 'C具身智能' },
   { key: 'D', label: 'D大厂应用' },
-  { key: '扩产', label: 'E扩产', color: '#4caf50' },
+  { key: '扩产', label: 'E扩产' },
 ];
 
 const impOptions: { key: string; label: string; cls: string }[] = [
@@ -43,7 +43,6 @@ export default function FilterBar({ mlFilter, impFilter, onMlChange, onImpChange
             <button
               key={t.key}
               className={`filter-tab ${active ? 'active' : ''}`}
-              style={t.color ? (active ? { background: t.color, borderColor: t.color, color: '#fff' } : { borderColor: t.color, color: t.color }) : undefined}
               onClick={() => onMlChange(toggleItem(mlFilter, t.key))}
             >
               {t.label}

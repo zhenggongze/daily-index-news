@@ -76,6 +76,34 @@ def get_mainline(title):
             return ml
     return "D"
 
+def split_compound_title(title):
+    """拆分复合标题（如钛晨报/氪星晚报等汇总类文章，含多条独立新闻）
+
+    Pattern 1: "氪星晚报 ｜ Meta投400亿建数据中心；字节探索自动驾驶；扩大消费规划"
+             -> ["Meta投400亿建数据中心", "字节探索自动驾驶", "扩大消费规划"]
+    Pattern 2: "【钛晨报】李强主持经济座谈会；Meta投400亿建数据中心"
+             -> ["李强主持经济座谈会", "Meta投400亿建数据中心"]
+    返回拆分后的子标题列表，无法拆分时返回原始标题的单元素列表
+    """
+    # Pattern 1: "prefix ｜ item1；item2；item3"（全角竖线 + 全角分号）
+    if "\uff5c" in title and "\uff1b" in title:
+        parts = title.split("\uff5c", 1)
+        body = parts[1].strip()
+        items = [item.strip() for item in body.split("\uff1b") if item.strip()]
+        if len(items) >= 2:
+            return items
+
+    # Pattern 2: "【prefix】item1；item2；item3"
+    m = re.match(r"^(\u3010[^\u3011]+\u3011)\s*(.+)$", title)
+    if m and "\uff1b" in m.group(2):
+        body = m.group(2).strip()
+        items = [item.strip() for item in body.split("\uff1b") if item.strip()]
+        if len(items) >= 2:
+            return items
+
+    return [title]
+
+
 def fetch_rss(url, name):
     entries = []
     try:
@@ -85,15 +113,24 @@ def fetch_rss(url, name):
             return []
         feed = feedparser.parse(resp.text)
         count = len(feed.entries)
+        split_count = 0
         for entry in feed.entries[:30]:
             title = (entry.get("title") or "").strip()
             summary = re.sub(r'<[^>]+>', '', entry.get("summary", entry.get("description", ""))).strip()
-            if title:
-                entries.append({"title": title, "summary": summary[:400], "source": name, "url": entry.get("link", "")})
-        status = f"✅ {count}条" if count > 0 else f"⚠️ 0条 (可能非RSS或解析失败)"
-        print(f"    {name}: {status}")
+            if not title:
+                continue
+            sub_titles = split_compound_title(title)
+            for sub in sub_titles:
+                entries.append({"title": sub, "summary": summary[:400], "source": name, "url": entry.get("link", "")})
+            if len(sub_titles) > 1:
+                split_count += len(sub_titles) - 1
+        total = len(entries)
+        info = f"\u2705 {count}\u6761" if count > 0 else f"\u26a0\ufe0f 0\u6761 (\u53ef\u80fd\u975eRSS\u6216\u89e3\u6790\u5931\u8d25)"
+        if split_count > 0:
+            info += f" \u2192 \u62c6\u5206+{split_count}\u6761"
+        print(f"    {name}: {info}")
     except Exception as e:
-        print(f"    {name}: ❌ {type(e).__name__}: {str(e)[:80]}")
+        print(f"    {name}: \u274c {type(e).__name__}: {str(e)[:80]}")
     return entries
 
 def extract_conclusion(summary):

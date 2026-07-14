@@ -101,6 +101,13 @@ def split_compound_title(title):
         if len(items) >= 2:
             return items
 
+    # Pattern 3: 无前缀但含2+全角分号的汇总标题（3+条独立新闻）
+    count_semicolon = title.count("\uff1b")
+    if count_semicolon >= 2:
+        items = [item.strip() for item in title.split("\uff1b") if item.strip()]
+        if len(items) >= 3:
+            return items
+
     return [title]
 
 

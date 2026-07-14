@@ -141,6 +141,51 @@ def extract_conclusion(summary):
         return c[:35] if len(c) > 35 else c
     return ""
 
+def deduplicate_similar_titles(entries, threshold=0.75):
+    """标题相似度去重：同批次中高度相似的标题视为重复，保留 summary 更长的条目"""
+    n = len(entries)
+    if n <= 1:
+        return entries
+    keep = [True] * n
+    merge_sources = [entries[i].get("source", "") for i in range(n)]
+    for i in range(n):
+        if not keep[i]:
+            continue
+        ti = entries[i]["title"]
+        li = len(ti)
+        for j in range(i + 1, n):
+            if not keep[j]:
+                continue
+            tj = entries[j]["title"]
+            lj = len(tj)
+            shorter = min(li, lj)
+            if shorter == 0:
+                continue
+            common = sum(1 for a, b in zip(ti, tj) if a == b)
+            sim = common / shorter
+            if sim >= threshold:
+                si = len(entries[i].get("summary", ""))
+                sj = len(entries[j].get("summary", ""))
+                if si >= sj:
+                    keep[j] = False
+                    merge_sources[i] = merge_sources[i] if entries[j]["source"] in merge_sources[i] else merge_sources[i] + ", " + entries[j]["source"]
+                else:
+                    keep[i] = False
+                    merge_sources[j] = merge_sources[j] if entries[i]["source"] in merge_sources[j] else merge_sources[j] + ", " + entries[i]["source"]
+                    break  # i 被丢弃，后续 j 不再与 i 比较
+    result = []
+    dup_removed = 0
+    for i in range(n):
+        if keep[i]:
+            entries[i]["source"] = merge_sources[i]
+            result.append(entries[i])
+        else:
+            dup_removed += 1
+    if dup_removed > 0:
+        print(f"  相似标题去重: 移除 {dup_removed} 条重复")
+    return result
+
+
 def gen_daily_summary(news_list):
     global_seen = set()
     result = {}
@@ -165,7 +210,7 @@ CLASSIFY_PROMPT = """你是一个顶级AI算力/半导体产业链分析师。�
 ==== 头部公司清单（仅关注这些公司，小公司噪音过滤） ====
 
 美国（含台湾）：
-- GPU/AI芯片：英伟达、AMD、Intel、博通、Marvell
+- GPU/AI芯片：英伟达、AMD、Intel（仅限GPU/AI芯片相关业务）、博通、Marvell
 - 代工/封装：台积电、日月光、安靠
 - 存储：美光、SK海力士、三星
 - 半导体设备：ASML、应用材料、泛林半导体、KLA
@@ -220,7 +265,7 @@ relevant=false（不相关）— 以下任一情况：
 
 | 标签 | 覆盖场景 |
 |------|---------|
-| 扩产 | CoWoS/HBM/GPU产能扩张、建厂、量产爬坡、设备采购、资本开支 |
+| 扩产 | AI算力直接相关的产能扩张：GPU/HBM/CoWoS/AI服务器/光模块/数据中心CapEx。必须满足全部条件：(1)扩产内容直接服务于AI算力产业链（GPU制造、HBM、先进封装、AI服务器、AI数据中心、光模块等）；(2)金额≥10亿美元或明确涉及A股供应链；(3)涉及头部公司。以下情况【不要标扩产】：CPU工厂扩产（与AI无直接关联）、金额<10亿美元的小额投资、2030年后的远期规划、与AI算力无关的常规产能扩张 |
 | 涨价 | 芯片/存储/材料/代工涨价、供需紧张提价 |
 | 降价 | 价格战、降价抢单、毛利率下行 |
 | 技术 | 新工艺/新架构/新产品、路线图、技术突破 |
@@ -237,6 +282,8 @@ impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"�
 - "中"：对特定环节/公司有实质性影响。融资/订单10~100亿美元，或龙头业绩超预期，或重要技术路线切换
 - "小"：信息量有限。融资<10亿美元，或单一产品发布，或远期路线图，或主观观点
 - 涉及头部公司时正常判断影响度；涉及非头部公司但与头部有供应链关系时，影响度上限为"中"
+- 涉及头部公司但扩产/投资项目与AI算力无直接关联时（如Intel常规CPU工厂、非AI数据中心），影响度上限为"小"
+- Intel仅当其新闻内容明确涉及GPU/AI芯片时才按头部公司处理，常规CPU业务按非头部公司对待
 
 ==== 示例（严谨参照）====
 
@@ -958,6 +1005,7 @@ def main():
                 continue
             deduped.append(e)
     print(f"  跨日重复剔除: {cross_day_dup} 条")
+    deduped = deduplicate_similar_titles(deduped)
     print(f"  去重后候选: {len(deduped)} 条")
 
     print("\n[3/5] LLM批量分类（判断相关性+影响度）...")

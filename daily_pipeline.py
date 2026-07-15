@@ -127,8 +127,13 @@ def fetch_rss(url, name):
             if not title:
                 continue
             sub_titles = split_compound_title(title)
+            is_split = len(sub_titles) > 1
             for sub in sub_titles:
-                entries.append({"title": sub, "summary": summary[:400], "source": name, "url": entry.get("link", "")})
+                # 拆分后子条目：原始 summary 描述的是整篇复合文章，每个子标题不一定对应。
+                # 如果直接共享 summary，会导致标题与内容完全错位（如标题"央行"但摘要却是"光迅科技"）。
+                # 因此拆分后的子条目 summary 留空，LLM 仅凭标题做分类和分析。
+                sub_summary = "" if is_split else summary[:400]
+                entries.append({"title": sub, "summary": sub_summary, "source": name, "url": entry.get("link", "")})
             if len(sub_titles) > 1:
                 split_count += len(sub_titles) - 1
         total = len(entries)
@@ -291,6 +296,8 @@ impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"�
 - 涉及头部公司时正常判断影响度；涉及非头部公司但与头部有供应链关系时，影响度上限为"中"
 - 涉及头部公司但扩产/投资项目与AI算力无直接关联时（如Intel常规CPU工厂、非AI数据中心），影响度上限为"小"
 - Intel仅当其新闻内容明确涉及GPU/AI芯片时才按头部公司处理，常规CPU业务按非头部公司对待
+- 非头部清单公司的个股业绩/融资/并购新闻：净利润<10亿人民币或营收<50亿人民币且无板块级影响时 → relevant=false；如果有板块级影响（如某材料公司业绩指引预示某个环节趋势）→ 影响度上限为"小"
+- 非头部公司 IPO/股价变动/人事 类新闻 → relevant=false
 
 ==== 示例（严谨参照）====
 

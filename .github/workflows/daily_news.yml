@@ -137,9 +137,9 @@ jobs:
       - name: 汇总报告并发送通知
         if: always()
         run: |
+          # 2026-08-11 用户要求：不再 PushDeer 推送工作流报告（workflow_logger.py 检测不到 PUSHDEER_KEY 自动跳过）
           python workflow_logger.py --finish "${{ env.RUN_ID }}"
         env:
-          PUSHDEER_KEY: ${{ secrets.PUSHDEER_KEY }}
           OSS_AK_ID: ${{ secrets.OSS_AK_ID }}
           OSS_AK_SECRET: ${{ secrets.OSS_AK_SECRET }}
           GITHUB_WORKFLOW: ${{ github.workflow }}

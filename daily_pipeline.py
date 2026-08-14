@@ -884,6 +884,61 @@ def extract_first_event_from_summary(item):
             return part[:60]
     return text[:60]
 
+def _rewrite_title_lines(lines, retries=2):
+    """对一批标题行调用LLM改写（带重试），成功返回结果列表，失败返回 None"""
+    user_msg = TITLE_REWRITE_PROMPT + "\n\n---\n\n".join(lines)
+    retry_delays = [2, 4]
+    for attempt in range(retries + 1):
+        try:
+            r = requests.post(DEEPSEEK_URL, json={
+                "model": DEEPSEEK_MODEL,
+                "messages": [{"role": "user", "content": user_msg}],
+                "temperature": 0.2,
+                # 2026-08-14 修复：v4推理模型reasoning消耗大，4096/120s会截断或超时导致JSON解析失败
+                "max_tokens": 8192,
+            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=240)
+
+            if r.status_code != 200:
+                if attempt < retries:
+                    time.sleep(retry_delays[attempt])
+                    continue
+                print(f"    ⚠️ 改写 HTTP {r.status_code}: {r.text[:100]}")
+                return None
+
+            content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+            json_str = content.strip()
+            if "```json" in json_str:
+                json_str = json_str.split("```json")[1].split("```")[0].strip()
+            elif "```" in json_str:
+                json_str = json_str.split("```")[1].split("```")[0].strip()
+            bracket = json_str.find("[")
+            end = json_str.rfind("]")
+            if bracket >= 0 and end > bracket:
+                json_str = json_str[bracket:end+1]
+
+            results = json.loads(json_str)
+            if isinstance(results, list):
+                return results
+            if attempt < retries:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"    ⚠️ 改写结果非数组")
+            return None
+        except json.JSONDecodeError:
+            if attempt < retries:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"    ⚠️ 改写JSON解析失败")
+            return None
+        except Exception as e:
+            if attempt < retries:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"    ⚠️ 改写调用失败: {e}")
+            return None
+    return None
+
+
 def rewrite_titles(news_list):
     if not news_list or not DEEPSEEK_KEY:
         return
@@ -917,68 +972,44 @@ def rewrite_titles(news_list):
     rewritten = 0
     failed = 0
 
+    # pending: (start, rel_indices) — rel_indices 是 need_rewrite_idx 中的相对位置
+    pending = []
     for chunk_start in range(0, total, CHUNK_SIZE):
-        chunk_indices = need_rewrite_idx[chunk_start:chunk_start + CHUNK_SIZE]
+        pending.append((chunk_start, list(range(chunk_start, min(chunk_start + CHUNK_SIZE, total)))))
+
+    while pending:
+        start, rel_indices = pending.pop(0)
         lines = []
-        for local_idx, orig_idx in enumerate(chunk_indices):
+        for local_idx, rel in enumerate(rel_indices):
+            orig_idx = need_rewrite_idx[rel]
             lines.append(f"idx={local_idx} | 原始标题：{news_list[orig_idx]['title']}")
-        user_msg = TITLE_REWRITE_PROMPT + "\n\n---\n\n".join(lines)
-        progress = f"{chunk_start + 1}-{min(chunk_start + len(chunk_indices), total)}/{total}"
+        progress = f"{start + 1}-{min(start + len(rel_indices), total)}/{total}"
 
-        chunk_ok = False
-        for attempt in range(3):
-            try:
-                r = requests.post(DEEPSEEK_URL, json={
-                    "model": DEEPSEEK_MODEL,
-                    "messages": [{"role": "user", "content": user_msg}],
-                    "temperature": 0.2,
-                    "max_tokens": 4096,
-                }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=120)
+        results = _rewrite_title_lines(lines)
+        if results is not None:
+            applied = 0
+            for result in results:
+                local_idx = result.get("idx", -1)
+                new_title = result.get("title", "")
+                if 0 <= local_idx < len(rel_indices) and new_title:
+                    orig_idx = need_rewrite_idx[rel_indices[local_idx]]
+                    old_title = news_list[orig_idx]["title"]
+                    if old_title != new_title:
+                        news_list[orig_idx]["title"] = new_title
+                        applied += 1
+            rewritten += applied
+            print(f"    改写 {progress} ✅ {len(rel_indices)}条")
+            continue
 
-                if r.status_code != 200:
-                    if attempt < 2:
-                        time.sleep(2)
-                        continue
-                    break
-
-                content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
-                json_str = content.strip()
-                if "```json" in json_str:
-                    json_str = json_str.split("```json")[1].split("```")[0].strip()
-                elif "```" in json_str:
-                    json_str = json_str.split("```")[1].split("```")[0].strip()
-                bracket = json_str.find("[")
-                end = json_str.rfind("]")
-                if bracket >= 0 and end > bracket:
-                    json_str = json_str[bracket:end+1]
-
-                results = json.loads(json_str)
-                if isinstance(results, list):
-                    for result in results:
-                        local_idx = result.get("idx", -1)
-                        new_title = result.get("title", "")
-                        if 0 <= local_idx < len(chunk_indices) and new_title:
-                            orig_idx = chunk_indices[local_idx]
-                            old_title = news_list[orig_idx]["title"]
-                            if old_title != new_title:
-                                news_list[orig_idx]["title"] = new_title
-                                rewritten += 1
-                    chunk_ok = True
-                    print(f"    改写 {progress} ✅ {len(chunk_indices)}条")
-                    break
-                if attempt < 2:
-                    time.sleep(2)
-                    continue
-                break
-            except Exception:
-                if attempt < 2:
-                    time.sleep(2)
-                    continue
-                break
-
-        if not chunk_ok:
-            failed += len(chunk_indices)
-            print(f"    改写 {progress} ⚠️ 失败")
+        # 失败：拆半降级重试（最小粒度3条，仍失败则跳过该批）
+        if len(rel_indices) <= 3:
+            failed += len(rel_indices)
+            print(f"    改写 {progress} ⚠️ 仍失败（{len(rel_indices)}条）")
+            continue
+        mid = len(rel_indices) // 2
+        print(f"    改写 {progress} ⚠️ 拆半重试")
+        pending.insert(0, (start + mid, rel_indices[mid:]))
+        pending.insert(0, (start, rel_indices[:mid]))
 
     if rewritten > 0 or failed > 0:
         print(f"  改写完成: {rewritten} 条成功" + (f", {failed} 条失败" if failed else ""))

@@ -27,7 +27,8 @@ if not DEEPSEEK_KEY:
     except:
         pass
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
-DEEPSEEK_MODEL = "deepseek-v4-pro"
+# 2026-08-14 用户要求：deepseek-v4-pro 涨价，改用 deepseek-v4-flash（API Key 不变）
+DEEPSEEK_MODEL = "deepseek-v4-flash"
 DATA_DIR = os.path.join(BASE, "news_site", "public", "data")
 os.makedirs(DATA_DIR, exist_ok=True)
 
@@ -422,16 +423,78 @@ impact判断标准（仅relevant=true时填 大/中/小；relevant=false时填"�
 
 输入新闻："""
 
+def _classify_lines(lines, retries=2):
+    """对一批新闻行调用LLM分类（带重试），成功返回结果列表，失败返回 None"""
+    user_msg = CLASSIFY_PROMPT + "\n\n---\n\n".join(lines)
+    retry_delays = [2, 4]
+    for attempt in range(retries + 1):
+        try:
+            r = requests.post(DEEPSEEK_URL, json={
+                "model": DEEPSEEK_MODEL,
+                "messages": [{"role": "user", "content": user_msg}],
+                "temperature": 0.2,
+                "max_tokens": 8192,
+            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=180)
+
+            if r.status_code != 200:
+                if attempt < retries:
+                    time.sleep(retry_delays[attempt])
+                    continue
+                print(f"    ⚠️ HTTP {r.status_code}: {r.text[:100]}")
+                return None
+
+            content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+            json_str = content.strip()
+            if "```json" in json_str:
+                json_str = json_str.split("```json")[1].split("```")[0].strip()
+            elif "```" in json_str:
+                json_str = json_str.split("```")[1].split("```")[0].strip()
+            bracket = json_str.find("[")
+            end = json_str.rfind("]")
+            if bracket >= 0 and end > bracket:
+                json_str = json_str[bracket:end+1]
+
+            results = json.loads(json_str)
+            if isinstance(results, list):
+                return results
+            if attempt < retries:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"    ⚠️ 分类结果非数组")
+            return None
+        except json.JSONDecodeError:
+            if attempt < retries:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"    ⚠️ JSON解析失败")
+            return None
+        except Exception as e:
+            if attempt < retries:
+                time.sleep(retry_delays[attempt])
+                continue
+            print(f"    ⚠️ 调用失败: {e}")
+            return None
+    return None
+
+
 def llm_classify_batch(candidates):
     if not candidates or not DEEPSEEK_KEY:
         return []
 
-    CHUNK_SIZE = 50
+    # 2026-08-14 修复：deepseek-v4-pro 是推理模型，50条/批时推理tokens耗尽max_tokens导致content为空→JSON解析失败→整批丢弃。
+    # 1) chunk 由50减小到20（实测20条/8192正常，50条/8192 content为空）
+    # 2) 失败chunk自动拆半降级重试（实测API存在间歇性空响应），保证条目不整批丢失
+    CHUNK_SIZE = 20
     all_results = []
     total = len(candidates)
 
+    pending = []  # (chunk_start, chunk)
     for chunk_start in range(0, total, CHUNK_SIZE):
         chunk = candidates[chunk_start:chunk_start + CHUNK_SIZE]
+        pending.append((chunk_start, chunk))
+
+    while pending:
+        chunk_start, chunk = pending.pop(0)
         lines = []
         for i, item in enumerate(chunk):
             global_idx = chunk_start + i
@@ -439,67 +502,25 @@ def llm_classify_batch(candidates):
             s = item.get("summary", "")[:200]
             lines.append(f"idx={global_idx} | 标题：{t}\n摘要：{s}")
 
-        user_msg = CLASSIFY_PROMPT + "\n\n---\n\n".join(lines)
         progress = f"{chunk_start + 1}-{min(chunk_start + len(chunk), total)}/{total}"
         print(f"  LLM批量分类 {progress}（{len(chunk)}条）...")
+        results = _classify_lines(lines)
+        if results is not None:
+            rel = sum(1 for r in results if r.get("relevant"))
+            print(f"    ✅ 相关 {rel}/{len(results)}")
+            all_results.extend(results)
+            continue
 
-        chunk_ok = False
-        retry_delays = [2, 4]
-        for attempt in range(3):
-            try:
-                r = requests.post(DEEPSEEK_URL, json={
-                    "model": DEEPSEEK_MODEL,
-                    "messages": [{"role": "user", "content": user_msg}],
-                    "temperature": 0.2,
-                    "max_tokens": 8192,
-                }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=180)
-
-                if r.status_code != 200:
-                    if attempt < 2:
-                        time.sleep(retry_delays[attempt])
-                        continue
-                    print(f"    ⚠️ HTTP {r.status_code}: {r.text[:100]}")
-                    break
-
-                content = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
-                json_str = content.strip()
-                if "```json" in json_str:
-                    json_str = json_str.split("```json")[1].split("```")[0].strip()
-                elif "```" in json_str:
-                    json_str = json_str.split("```")[1].split("```")[0].strip()
-                bracket = json_str.find("[")
-                end = json_str.rfind("]")
-                if bracket >= 0 and end > bracket:
-                    json_str = json_str[bracket:end+1]
-
-                results = json.loads(json_str)
-                if isinstance(results, list):
-                    rel = sum(1 for r in results if r.get("relevant"))
-                    all_results.extend(results)
-                    print(f"    ✅ 相关 {rel}/{len(results)}")
-                    chunk_ok = True
-                    break
-                if attempt < 2:
-                    time.sleep(retry_delays[attempt])
-                    continue
-                print(f"    ⚠️ 分类结果非数组")
-                break
-            except json.JSONDecodeError:
-                if attempt < 2:
-                    time.sleep(retry_delays[attempt])
-                    continue
-                print(f"    ⚠️ JSON解析失败")
-                break
-            except Exception as e:
-                if attempt < 2:
-                    time.sleep(retry_delays[attempt])
-                    continue
-                print(f"    ⚠️ 调用失败: {e}")
-                break
-
-        if not chunk_ok:
+        # 失败：拆半降级重试，保证条目不整批丢弃（最小粒度3条，仍失败则标记不相关）
+        if len(chunk) <= 3:
             for i in range(len(chunk)):
-                all_results.append({"idx": chunk_start + i, "relevant": False, "impact": "无", "reason": "分类超时"})
+                all_results.append({"idx": chunk_start + i, "relevant": False, "impact": "无", "reason": "分类失败"})
+            print(f"    ⚠️ 仍失败（{len(chunk)}条）标记为不相关")
+            continue
+        mid = len(chunk) // 2
+        print(f"    ⚠️ 拆半重试 {progress}")
+        pending.insert(0, (chunk_start + mid, chunk[mid:]))
+        pending.insert(0, (chunk_start, chunk[:mid]))
 
     rel_count = sum(1 for r in all_results if r.get("relevant"))
     print(f"  分类完成：相关 {rel_count} 条 / 总计 {len(all_results)} 条")
@@ -602,8 +623,10 @@ def deepseek_analyze_one(item, index):
                 "model": DEEPSEEK_MODEL,
                 "messages": [{"role": "user", "content": user_msg}],
                 "temperature": 0.5,
-                "max_tokens": 2048,
-            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=120)
+                # 2026-08-14 修复：deepseek-v4-pro推理模型的reasoning消耗2000-3500 tokens，
+                # 原2048 max_tokens会把content截断导致JSON解析失败（实测2048失败、4096成功）
+                "max_tokens": 4096,
+            }, headers={"Authorization": f"Bearer {DEEPSEEK_KEY}"}, timeout=240)
 
             if r.status_code != 200:
                 print(f"  #{index} 返回{r.status_code}: {r.text[:100]}")
